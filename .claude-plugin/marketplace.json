@@ -1,0 +1,14 @@
+{
+  "name": "sap-b1-plugins",
+  "owner": {
+    "name": "Aske Paustian"
+  },
+  "description": "SAP Business One connection and workflow skills for Claude.",
+  "plugins": [
+    {
+      "name": "sap-b1",
+      "source": "./",
+      "description": "Hosted SAP B1 Service Layer connection plus workflow skills for invoices, journal entries, service calls, and work logging."
+    }
+  ]
+}

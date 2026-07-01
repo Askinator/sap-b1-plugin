@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "sap-b1",
+  "displayName": "SAP Business One",
+  "version": "0.1.0",
+  "description": "Connects Claude to a hosted SAP Business One Service Layer MCP server and bundles skills for invoices, journal entries, service calls, and technician work logging. Chart-of-accounts and VAT specifics are resolved live per company database, so one plugin serves every tenant.",
+  "author": {
+    "name": "Aske Paustian"
+  },
+  "keywords": [
+    "sap",
+    "sap-business-one",
+    "sap-b1",
+    "erp",
+    "service-layer",
+    "mcp"
+  ],
+  "license": "MIT",
+  "userConfig": {
+    "mcp_url": {
+      "type": "string",
+      "title": "SAP B1 MCP server URL",
+      "description": "HTTPS endpoint of your company's hosted SAP B1 MCP server, including the MCP path (for example https://sap.yourcompany.com/mcp). Each company database has its own server URL.",
+      "required": true
+    }
+  }
+}
