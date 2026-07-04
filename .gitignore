@@ -9,3 +9,8 @@ Thumbs.db
 .claude/
 /.vs
 /.github
+
+# Node — only used to pin the claude CLI for `plugin validate`, not part of the plugin
+node_modules/
+package.json
+package-lock.json
