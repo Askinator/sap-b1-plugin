@@ -39,10 +39,13 @@ same skill text works against any tenant because all specifics are resolved live
 
 ## Skills layout and how they relate
 
+- **`sap-b1-getting-started`** — first-run onboarding: confirms the MCP connection, tours the skills,
+  recommends Cowork, and offers to set up a recurring read-only scheduled digest. Routing only — no
+  writes of its own.
 - **`sap-b1-overview`** — orientation: the discovery-first rule, the tool map, and tool-availability
   caveats. Its `reference.md` is the shared tenant-invariant knowledge base other skills point to.
 - **Task skills** — `sap-b1-invoices`, `sap-b1-journal-entries`, `sap-b1-service-calls`,
-  `sap-b1-work-logging`, `sap-b1-lookups` (read-only balances/aging/status). Each is self-contained
+  `sap-b1-lookups` (read-only balances/aging/status). Each is self-contained
   but defers cross-cutting facts to the overview/reference rather than duplicating them.
 
 Skills are auto-discovered and invoked based on their frontmatter **`description`** — that field is

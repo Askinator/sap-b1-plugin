@@ -1,6 +1,6 @@
 ---
 name: sap-b1-journal-entries
-description: Post manual journal entries (JournalEntries) directly to the SAP Business One general ledger via the Service Layer MCP — expense bookings paid by card/bank/cash, receipt-based bilag, corrections, and reclassifications between G/L accounts where there is no vendor invoice and no item flow. Use whenever the user wants to post a journal entry, manuel postering, kassekladde, bogføringsbilag, or bilag, or book an expense, receipt, kvittering, or udlæg with no invoice. Resolves every G/L account live for the connected company database and keeps debits equal to credits.
+description: "Post manual journal entries (JournalEntries) directly to the SAP Business One general ledger via the Service Layer MCP — expense bookings paid by card/bank/cash, receipt-based bilag, corrections, and reclassifications between G/L accounts where there is no vendor invoice and no item flow. Use whenever the user wants to post a journal entry, manuel postering, kassekladde, bogføringsbilag, or bilag, or book an expense, receipt, kvittering, or udlæg with no invoice. Resolves every G/L account live for the connected company database and keeps debits equal to credits."
 ---
 
 # SAP B1 — manual journal entries

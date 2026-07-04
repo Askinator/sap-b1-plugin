@@ -14,11 +14,11 @@ Access). This repo contains only the plugin: the remote connection config and th
 - `.claude-plugin/plugin.json` — plugin manifest with a `userConfig.mcp_url` field.
 - `.claude-plugin/marketplace.json` — single-plugin marketplace so the repo is installable.
 - `skills/` — workflow skills, auto-discovered and invoked by Claude on relevant tasks:
+  - `sap-b1-getting-started` — first-run onboarding: verify the connection, tour the skills, work in Cowork, set up a scheduled digest.
   - `sap-b1-overview` — orientation, tool map, and the **discovery-first rule** (+ `reference.md`).
   - `sap-b1-invoices` — AR/AP invoices (item and service lines).
   - `sap-b1-journal-entries` — manual GL postings, debits = credits.
   - `sap-b1-service-calls` — support tickets.
-  - `sap-b1-work-logging` — technician time logging via a draft invoice.
   - `sap-b1-lookups` — read-only balances, aging, and order/quotation/PO status.
 
 ## Multi-tenant model

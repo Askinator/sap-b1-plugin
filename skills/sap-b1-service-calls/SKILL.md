@@ -1,6 +1,6 @@
 ---
 name: sap-b1-service-calls
-description: Create and manage Service Calls (ServiceCalls) in SAP Business One via the Service Layer MCP — support tickets logged against a customer, with the activity → service call → hours → invoice workflow. Use whenever the user wants to create a service call, open or update a support ticket, log an issue for a customer, or ask about the IT support-to-invoice flow. Also triggers on Danish requests: opret en servicesag, support sag, sagsnummer, fejlmelding, reklamation, kundehenvendelse. Resolves the customer, contact, and any item/account references live for the connected company database.
+description: "Create and manage Service Calls (ServiceCalls) in SAP Business One via the Service Layer MCP — support tickets logged against a customer, with the activity → service call → hours → invoice workflow. Use whenever the user wants to create a service call, open or update a support ticket, log an issue for a customer, or ask about the IT support-to-invoice flow. Also triggers on Danish requests: opret en servicesag, support sag, sagsnummer, fejlmelding, reklamation, kundehenvendelse. Resolves the customer, contact, and any item/account references live for the connected company database."
 ---
 
 # SAP B1 — service calls
@@ -11,8 +11,7 @@ resolve the customer, contact, and any referenced item/account **live** for the 
 ## Support-to-invoice workflow
 
 1. **Service call** (`ServiceCalls`) — the ticket: subject, customer, description, status.
-2. **Activities / work** — log time and actions against the call (see `sap-b1-work-logging` for
-   the draft-invoice time-logging approach).
+2. **Activities / work** — log time and actions against the call.
 3. **Invoice** — bill the accumulated work (see `sap-b1-invoices`).
 
 ## Steps
