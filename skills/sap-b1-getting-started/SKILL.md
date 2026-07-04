@@ -31,6 +31,21 @@ If it fails or the `sap_b1_*` tools aren't present, the server URL almost certai
 
 Don't guess a URL or fabricate data — if there's no connection, help the user set it up and stop.
 
+### Know which company and environment you're on
+
+This is a **live ERP**. Before any write, establish two things and say them back to the user:
+
+- **Which company database** answered (each has its own URL, chart of accounts, and data).
+- **Whether it's production or a test/sandbox** company. If it's unclear from the connection, ask —
+  never assume you're on test. Real invoices and journal entries have real accounting consequences.
+
+### Check what this deployment lets you do
+
+The server gates tools by capability, so confirm early whether this connection is **read-only** or
+allows writes. A quick `sap_b1_discover` tells you which `sap_b1_*` tools exist. If only reads are
+exposed, say so up front — the user can look up and summarize, but creating or posting documents
+needs the write tools enabled server-side.
+
 ## 2. What you can do here
 
 | I want to… | Skill |
@@ -70,10 +85,33 @@ must keep a human in the loop; never automate a posting step.
 
 ## 5. A safe first task
 
-Steer the first hands-on task to something **read-only** — e.g. "what does customer X owe?" or "show
-me overdue invoices" via `sap-b1-lookups`. It proves the whole path end to end with zero risk. Save
-writes for after the user is comfortable, and when you do write, follow the **draft-first** pattern:
-`sap_b1_create_draft` → show a compact receipt → post only after the user confirms.
+Steer the first hands-on task to something **read-only** — it proves the whole path end to end with
+zero risk. Offer the user a couple of concrete prompts to try, adapted to their words:
+
+- "What does customer **&lt;name&gt;** owe, and is anything overdue?"
+- "Show me the open AR invoices, oldest first."
+- "What's the status of order / quotation **&lt;number&gt;**?"
+- "List the open service calls for **&lt;customer&gt;**."
+
+Save writes for after the user is comfortable, and when you do write, follow the **draft-first**
+pattern: `sap_b1_create_draft` → show a compact receipt → post only after the user confirms.
+
+## 6. When something goes wrong
+
+Set expectations about correcting mistakes so nobody panics:
+
+- **Drafts are safe.** A draft (`sap_b1_create_draft`) posts nothing to the ledger — it can be edited
+  or deleted freely. Do all the shaping there.
+- **Posted documents are not simply deleted.** In SAP B1 a posted invoice or journal entry is
+  corrected by a **reversing document** (credit memo, reversing journal entry), not a delete. If the
+  user wants to undo a posted document, route to the relevant task skill and resolve the reversal
+  accounts live — don't fabricate a fix or attempt a raw delete.
+
+## Keep the plugin up to date
+
+Skills improve over time. To pull the latest, the user runs `/plugin marketplace update` in Claude
+Code (or updates the plugin from the desktop **Plugins** panel). Mention this once so they know new
+skills and fixes arrive without reinstalling.
 
 ## Guardrails to mention once, up front
 
@@ -83,3 +121,6 @@ writes for after the user is comfortable, and when you do write, follow the **dr
   only when the server has a SQL dialect configured. Degrade gracefully and tell the user what to
   enable.
 - **Draft-first for anything financial:** confirm before posting to the ledger.
+- **This is real business data:** balances, partners, and postings come from a live company
+  database. Share results only with the intended user, and don't export or send them anywhere the
+  user hasn't asked for.
