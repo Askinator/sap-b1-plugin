@@ -19,6 +19,7 @@ Access). This repo contains only the plugin: the remote connection config and th
   - `sap-b1-journal-entries` — manual GL postings, debits = credits.
   - `sap-b1-service-calls` — support tickets.
   - `sap-b1-work-logging` — technician time logging via a draft invoice.
+  - `sap-b1-lookups` — read-only balances, aging, and order/quotation/PO status.
 
 ## Multi-tenant model
 

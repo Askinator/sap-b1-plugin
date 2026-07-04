@@ -7,3 +7,5 @@ Thumbs.db
 
 # Local Claude / plugin state
 .claude/
+/.vs
+/.github

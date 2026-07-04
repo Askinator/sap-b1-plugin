@@ -1,6 +1,6 @@
 ---
 name: sap-b1-overview
-description: Orientation for working with SAP Business One over the hosted Service Layer MCP server (sap_b1_* tools). Use at the start of any SAP B1 task — reading or creating documents, business partners, items, invoices, journal entries, service calls — to pick the right tool and to resolve account numbers, VAT groups, and payment accounts correctly. Explains the discovery-first rule that keeps work correct across different company databases.
+description: Orientation for working with SAP Business One over the hosted Service Layer MCP server (sap_b1_* tools). Use at the start of any SAP B1 task — reading or creating documents, business partners, items, invoices, journal entries, service calls — to pick the right tool and to resolve account numbers, VAT groups, and payment accounts correctly. Also triggers on Danish SAP B1 requests (e.g. bogføring, kontoplan, debitor/kreditor, moms, forespørgsel i SAP) to route to the right task skill. Explains the discovery-first rule that keeps work correct across different company databases.
 ---
 
 # SAP Business One — orientation

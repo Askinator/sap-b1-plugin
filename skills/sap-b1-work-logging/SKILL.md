@@ -1,6 +1,6 @@
 ---
 name: sap-b1-work-logging
-description: Log technician work sessions against a SAP Business One service call or ticket using a draft AR invoice, then finalize into a real invoice when the job is done. Use whenever a technician says they are working on a ticket, service call, or SC number, wants to log time or hours, records what they did, asks for a summary of work on a ticket, or is ready to invoice a service call. Resolves the customer, service item/G-L account, and VAT group live for the connected company database.
+description: Log technician work sessions against a SAP Business One service call or ticket using a draft AR invoice, then finalize into a real invoice when the job is done. Use whenever a technician says they are working on a ticket, service call, or SC number, wants to log time or hours, records what they did, asks for a summary of work on a ticket, or is ready to invoice a service call. Also triggers on Danish requests: log timer, registrer tid, arbejdstid på sag, hvad har jeg lavet på sagen, fakturer sagen. Resolves the customer, service item/G-L account, and VAT group live for the connected company database.
 ---
 
 # SAP B1 — work logging (draft invoice as a timesheet)
