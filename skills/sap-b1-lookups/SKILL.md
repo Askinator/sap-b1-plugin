@@ -23,7 +23,7 @@ creating or changing documents, use the relevant task skill (`sap-b1-invoices`,
    ambiguous, list matches and ask which one.
 2. **Confirm fields for this DB.** Balance and aging field names vary by configuration —
    `sap_b1_discover action="describe" name="BusinessPartners"` before relying on a specific field
-   (commonly `CurrentAccount`/`Balance` for open balance; aging buckets are usually a separate
+   (commonly `CurrentAccountBalance` for open balance; aging buckets are usually a separate
    report, not a plain field — see Notes).
 3. **Query, don't write.** Use `sap_b1_sl_query` (or `sap_b1_sql_query` if enabled) — never
    `sap_b1_sl_write` or `sap_b1_create_draft` for a lookup task.

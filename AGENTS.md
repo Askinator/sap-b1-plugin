@@ -43,10 +43,15 @@ same skill text works against any tenant because all specifics are resolved live
   recommends Cowork, and offers to set up a recurring read-only scheduled digest. Routing only — no
   writes of its own.
 - **`sap-b1-overview`** — orientation: the discovery-first rule, the tool map, and tool-availability
-  caveats. Its `reference.md` is the shared tenant-invariant knowledge base other skills point to.
-- **Task skills** — `sap-b1-invoices`, `sap-b1-journal-entries`, `sap-b1-service-calls`,
-  `sap-b1-lookups` (read-only balances/aging/status). Each is self-contained
-  but defers cross-cutting facts to the overview/reference rather than duplicating them.
+  caveats. Its `reference.md` is the shared tenant-invariant knowledge base other skills point to —
+  entity/DocObjectCode maps, the object-type table, the **copy-from-base** recipe, the **draft-first
+  finalize** rule, and the file-attachment (`prepare_upload`/`attach_file`) flow.
+- **Task skills** — `sap-b1-lookups` (read-only balances/aging/status), `sap-b1-invoices`,
+  `sap-b1-credit-memos`, `sap-b1-payments`, `sap-b1-sales-process`, `sap-b1-purchasing`,
+  `sap-b1-journal-entries`, `sap-b1-service-calls`, `sap-b1-master-data`. Each is self-contained
+  but defers cross-cutting facts to the overview/reference rather than duplicating them. The
+  lifecycle skills (sales, purchasing) and credit memos share the single copy-from-base recipe in
+  `reference.md` instead of each re-explaining `BaseType`/`BaseEntry`/`BaseLine`.
 
 Skills are auto-discovered and invoked based on their frontmatter **`description`** — that field is
 the trigger surface, so keep it dense with the phrasings a real user would type.
@@ -93,8 +98,13 @@ Bash tool environment, so validation typically runs in an interactive Claude Cod
 
 ## Planned work
 
-Future skills are tracked as GitHub issues on
-[Askinator/sap-b1-plugin](https://github.com/Askinator/sap-b1-plugin/issues): payments/reconciliation,
-credit memos, the purchasing lifecycle (PO → goods receipt → AP invoice), and the sales lifecycle
-(quotation → order → delivery → invoice). Several will need a shared "copy from base document"
-recipe — add it once to `reference.md` rather than duplicating across skills.
+The first wave of planned skills has shipped: payments (`sap-b1-payments`), credit memos and
+reversals (`sap-b1-credit-memos`), the purchasing lifecycle (`sap-b1-purchasing`), the sales
+lifecycle (`sap-b1-sales-process`), and master-data creation (`sap-b1-master-data`). The shared
+"copy from base document" recipe now lives in `reference.md` and is reused by all of them.
+
+Still open (tracked as GitHub issues on
+[Askinator/sap-b1-plugin](https://github.com/Askinator/sap-b1-plugin/issues)): deeper reconciliation
+(bank statement matching), returns/RMA flows, and a dedicated attachments skill once the
+`prepare_upload`/`attach_file` flow has been exercised against a live tenant. When adding one, keep
+tenant-specific values resolved live and push any new tenant-invariant fact into `reference.md`.

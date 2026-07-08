@@ -8,7 +8,7 @@
     {
       "name": "sap-b1",
       "source": "./",
-      "description": "Hosted SAP B1 Service Layer connection plus workflow skills for invoices, journal entries, and service calls."
+      "description": "Hosted SAP B1 Service Layer connection plus workflow skills for the sales/purchasing lifecycles, invoices, credit memos, payments, journal entries, service calls, master data, and lookups."
     }
   ]
 }

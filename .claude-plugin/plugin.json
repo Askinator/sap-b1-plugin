@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "sap-b1",
   "displayName": "SAP Business One",
-  "version": "0.2.0",
-  "description": "Connects Claude to a hosted SAP Business One Service Layer MCP server and bundles skills for invoices, journal entries, and service calls. Chart-of-accounts and VAT specifics are resolved live per company database, so one plugin serves every tenant.",
+  "version": "0.3.0",
+  "description": "Connects Claude to a hosted SAP Business One Service Layer MCP server and bundles skills for the sales and purchasing lifecycles, invoices, credit memos, payments, journal entries, service calls, master data, and read-only lookups. Chart-of-accounts and VAT specifics are resolved live per company database, so one plugin serves every tenant.",
   "author": {
     "name": "Aske Paustian"
   },

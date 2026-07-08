@@ -53,8 +53,13 @@ needs the write tools enabled server-side.
 | Understand the tools + the discovery-first rule | `sap-b1-overview` |
 | Check balances, aging, or a document's status (read-only) | `sap-b1-lookups` |
 | Create/post an AR or AP invoice | `sap-b1-invoices` |
+| Credit a customer/vendor or reverse a posted document | `sap-b1-credit-memos` |
+| Register a customer/vendor payment against invoices | `sap-b1-payments` |
+| Quote → order → deliver → invoice (sales) | `sap-b1-sales-process` |
+| Purchase order → goods receipt → AP invoice | `sap-b1-purchasing` |
 | Post a manual journal entry to the G/L | `sap-b1-journal-entries` |
 | Open or manage a support/service ticket | `sap-b1-service-calls` |
+| Create a new customer, vendor, or item | `sap-b1-master-data` |
 
 Everything tenant-specific (accounts, VAT groups, item codes) is resolved **live** against the
 connected database — nothing is hardcoded, so the same skills work for any company.

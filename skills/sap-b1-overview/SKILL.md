@@ -34,7 +34,8 @@ If you cannot resolve a required code, **stop and ask the user** rather than inv
 | Generic OData read of any entity set | `sap_b1_sl_query` |
 | Create / update / delete via Service Layer | `sap_b1_sl_write` (POST / PATCH / DELETE) |
 | Create a draft document | `sap_b1_create_draft` (needs `DocObjectCode`) |
-| Attach a file to a record | `sap_b1_attach_file` |
+| Get an upload token for a chat file | `sap_b1_prepare_upload` (then curl upload) |
+| Attach a host/Base64 file to a record | `sap_b1_attach_file` |
 | Raw read-only SQL (when enabled) | `sap_b1_sql_query` |
 | Look up SAP table/field docs | `sap_b1_sql_reference` |
 
@@ -54,6 +55,16 @@ capability is missing, tell the user what to enable.
 - Use raw Service Layer names (entity sets, field names, OData options) — this MCP intentionally
   mirrors Service Layer rather than inventing a friendlier vocabulary.
 
-See `reference.md` in this skill for entity/DocObjectCode maps and live-lookup recipes. The task
-skills — `sap-b1-invoices`, `sap-b1-journal-entries`, `sap-b1-service-calls` — cover specific
-workflows.
+See `reference.md` in this skill for entity/DocObjectCode maps, the object-type / copy-from-base
+recipe, the draft-first finalize rule, and file-attachment steps. The task skills cover specific
+workflows:
+
+- `sap-b1-lookups` — read-only balances, aging, and document status.
+- `sap-b1-invoices` — AR/AP invoices (item and service lines).
+- `sap-b1-credit-memos` — AR/AP credit memos and reversing posted documents.
+- `sap-b1-payments` — apply incoming (customer) and outgoing (vendor) payments to invoices.
+- `sap-b1-sales-process` — quotation → order → delivery → invoice (copy-from-base).
+- `sap-b1-purchasing` — purchase order → goods receipt → AP invoice (copy-from-base).
+- `sap-b1-journal-entries` — manual G/L postings, debits = credits.
+- `sap-b1-service-calls` — support tickets and activity logging.
+- `sap-b1-master-data` — create/maintain business partners and items.

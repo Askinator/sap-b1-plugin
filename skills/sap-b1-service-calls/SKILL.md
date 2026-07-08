@@ -11,7 +11,7 @@ resolve the customer, contact, and any referenced item/account **live** for the 
 ## Support-to-invoice workflow
 
 1. **Service call** (`ServiceCalls`) — the ticket: subject, customer, description, status.
-2. **Activities / work** — log time and actions against the call.
+2. **Activities / work** — log actions against the call as `Activities` rows (see below).
 3. **Invoice** — bill the accumulated work (see `sap-b1-invoices`).
 
 ## Steps
@@ -43,6 +43,43 @@ sap_b1_sl_write
 
 Confirm the exact field names against `describe` first — `CustomerCode`/`Subject` are common but
 verify for this DB, and only set status/priority/type with codes you resolved live.
+
+## Log work against a call (activities)
+
+Record what was done as an `Activities` row, then **link it to the call from the call side** — an
+`Activity` has **no** service-call field. The link lives on the service call's `ServiceCallActivities`
+collection, whose entries reference the activity by its `ActivityCode` (the activity's own key).
+Describe both entities first if unsure (`sap_b1_discover action="describe" name="Activities"` and
+`name="ServiceCall"`); note text goes in `Notes` (a `Details` field also exists).
+
+Two steps:
+
+1. **Create the activity** and capture the returned `ActivityCode`.
+   ```
+   sap_b1_sl_write
+     method: "POST"
+     path: "Activities"
+     body: {
+       "CardCode": "<resolved customer>",
+       "Notes": "<what was done>",
+       "ActivityDate": "2026-07-08"
+     }
+   ```
+2. **Attach it to the call** by PATCHing the call and adding the activity to its
+   `ServiceCallActivities` collection:
+   ```
+   sap_b1_sl_write
+     method: "PATCH"
+     path: "ServiceCalls(<ServiceCallID>)"
+     body: { "ServiceCallActivities": [ { "ActivityCode": <the new ActivityCode> } ] }
+   ```
+   (A PATCH replaces the collection, so include every activity that should remain on the call, or
+   set them all when you create/update the call.)
+
+Resolve any activity type/subject codes live before writing. To review work already logged, read
+the call's `ServiceCallActivities` to get the `ActivityCode`s, then read those `Activities` — you
+can't filter `Activities` by service call directly. When it's time to bill the accumulated work,
+hand off to `sap-b1-invoices` — resolve the service item or G/L account and VAT group live there.
 
 ## Notes
 

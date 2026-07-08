@@ -27,9 +27,13 @@ connected DB (see `sap-b1-overview`). Never reuse codes from another company.
    entity — do not assume a rate.
 3. **Confirm fields for this DB.** `sap_b1_discover action="describe" name="Invoices"` (or
    `PurchaseInvoices`) if unsure of a field name.
-4. **Draft first.** Create with `sap_b1_create_draft` and show the compact receipt.
+4. **Show a receipt and confirm.** Summarize the partner, lines, totals, and tax in chat before
+   posting. If the user wants a reviewable SAP draft, create one with `sap_b1_create_draft` and
+   capture its `DraftEntry`.
 5. **Finalize after confirmation.** Post the real invoice with `sap_b1_sl_write`
-   (`POST Invoices` / `POST PurchaseInvoices`), or have the user approve the draft in SAP.
+   (`POST Invoices` / `POST PurchaseInvoices`). If you created a draft, either have the user
+   approve it in SAP **or** delete it after posting — see the draft-first finalize rule in
+   `sap-b1-overview/reference.md` so you don't leave an orphan draft.
 
 ## Payload shapes
 
@@ -41,7 +45,7 @@ sap_b1_create_draft
   DocDate: "2026-07-01"
   DocDueDate: "2026-07-15"
   DocumentLines: [
-    { "ItemCode": "<resolved>", "Quantity": 2, "TaxCode": "<resolved>" }
+    { "ItemCode": "<resolved>", "Quantity": 2, "VatGroup": "<resolved>" }
   ]
 ```
 
@@ -53,7 +57,7 @@ sap_b1_create_draft
   DocType: "dDocument_Service"
   DocDate: "2026-07-01"
   DocumentLines: [
-    { "AccountCode": "<resolved G/L>", "LineTotal": 1000.00, "TaxCode": "<resolved>" }
+    { "AccountCode": "<resolved G/L>", "LineTotal": 1000.00, "VatGroup": "<resolved>" }
   ]
 ```
 
@@ -64,6 +68,13 @@ field). For AP, use `path="PurchaseInvoices"`.
 ## Notes
 
 - Dates are `YYYY-MM-DD`. Use the user's date or today.
+- `VatGroup` is the standard Service Layer line VAT field; some localizations use `TaxCode`.
+  Confirm the field name via `describe` and resolve the code value live.
+- **AP invoices:** set `NumAtCard` to the vendor's own invoice number when the user gives it —
+  it's how AP invoices are matched and found later.
+- To bill from an existing sales order or delivery, copy from the base document instead of
+  retyping lines (`BaseType`/`BaseEntry`/`BaseLine`) — see `sap-b1-sales-process` and the
+  copy-from-base recipe in `sap-b1-overview/reference.md`.
 - Only pass fields you can justify. Let SAP default the rest.
 - If `sap_b1_create_draft` or `sap_b1_sl_write` is not exposed on this deployment, you can still
   read invoices with `sap_b1_get_document entity="Invoices"`; tell the user that creating requires

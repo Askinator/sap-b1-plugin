@@ -23,9 +23,12 @@ paid by card, a correction, or a reclassification. For a bill from a vendor, use
    name (e.g. filter `contains(Name,'…')`); if several match, show them and ask.
 2. **Confirm line fields for this DB.** `sap_b1_discover action="describe" name="JournalEntries"`
    and describe the line type (search for `JournalEntryLines`) if unsure.
-3. **Draft first.** Create with `sap_b1_create_draft` (`DocObjectCode: "oJournalEntries"`), show
-   the compact receipt and the debit/credit totals.
-4. **Post after confirmation** with `sap_b1_sl_write method="POST" path="JournalEntries"`.
+3. **Show a receipt and confirm.** Present the lines and the debit/credit totals in chat. If the
+   user wants a reviewable SAP draft, create one with `sap_b1_create_draft`
+   (`DocObjectCode: "oJournalEntries"`) and capture its `DraftEntry`.
+4. **Post after confirmation** with `sap_b1_sl_write method="POST" path="JournalEntries"`. If you
+   created a draft, approve it in SAP or delete it after posting so no orphan draft remains — see
+   the draft-first finalize rule in `sap-b1-overview/reference.md`.
 
 ## Payload shape
 

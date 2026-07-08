@@ -16,10 +16,15 @@ Access). This repo contains only the plugin: the remote connection config and th
 - `skills/` — workflow skills, auto-discovered and invoked by Claude on relevant tasks:
   - `sap-b1-getting-started` — first-run onboarding: verify the connection, tour the skills, work in Cowork, set up a scheduled digest.
   - `sap-b1-overview` — orientation, tool map, and the **discovery-first rule** (+ `reference.md`).
-  - `sap-b1-invoices` — AR/AP invoices (item and service lines).
-  - `sap-b1-journal-entries` — manual GL postings, debits = credits.
-  - `sap-b1-service-calls` — support tickets.
   - `sap-b1-lookups` — read-only balances, aging, and order/quotation/PO status.
+  - `sap-b1-invoices` — AR/AP invoices (item and service lines).
+  - `sap-b1-credit-memos` — AR/AP credit memos and reversing posted documents.
+  - `sap-b1-payments` — apply incoming/outgoing payments to open invoices.
+  - `sap-b1-sales-process` — quotation → order → delivery → invoice (copy-from-base).
+  - `sap-b1-purchasing` — purchase order → goods receipt → AP invoice (copy-from-base).
+  - `sap-b1-journal-entries` — manual GL postings, debits = credits.
+  - `sap-b1-service-calls` — support tickets and activity logging.
+  - `sap-b1-master-data` — create/maintain business partners and items.
 
 ## Multi-tenant model
 
