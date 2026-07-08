@@ -21,13 +21,14 @@ Before anything else, prove the MCP link is live with a lightweight, read-only c
 - `sap_b1_discover` with `action: "list_entity_sets"`. If it returns entity sets, you're connected —
   tell the user which company database responded if that's visible.
 
-If it fails or the `sap_b1_*` tools aren't present, the server URL almost certainly isn't set:
+If it fails or the `sap_b1_*` tools aren't present, the connector isn't set up yet. This plugin
+ships **skills only** — it does not bundle the server connection, because every company database
+has its own URL. Each user adds their company's server as a custom connector:
 
-- The endpoint comes from the `mcp_url` config, injected into `.mcp.json` as `${user_config.mcp_url}`.
-- **In Claude Code (CLI):** you're prompted for the URL when the plugin is enabled.
-- **In the Claude desktop "Plugins" UI:** the `${user_config.mcp_url}` substitution does *not* run —
-  add the server under **Settings → Connectors → Add custom connector** and paste the real
-  `https://…/mcp` endpoint by hand, then the skills can call the tools.
+- In **Claude Desktop / claude.ai**: **Settings → Connectors → Add custom connector** (or
+  **Customize → Connectors** on claude.ai), give it a name (e.g. `sap-b1`), and paste the real
+  `https://…/mcp` endpoint. The skills then call the `sap_b1_*` tools it exposes.
+- Authenticate the connector if it prompts for OAuth / Cloudflare Access.
 
 Don't guess a URL or fabricate data — if there's no connection, help the user set it up and stop.
 

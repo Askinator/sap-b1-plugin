@@ -7,10 +7,15 @@ Guidance for AI agents (and humans) working in this repository.
 This is a **Claude Code / Claude Desktop plugin**, not an application. There is **no build, test,
 lint, or runtime step**. The deliverable is:
 
-- `.mcp.json` — a **remote** MCP connection (`type: "http"`) whose URL is injected at install time.
-- `.claude-plugin/plugin.json` — the plugin manifest (name, version, `userConfig.mcp_url`).
+- `.claude-plugin/plugin.json` — the plugin manifest (name, version). **Skills only — no bundled
+  MCP server.**
 - `.claude-plugin/marketplace.json` — a single-plugin marketplace so the repo is installable.
 - `skills/` — markdown skills that teach Claude the SAP B1 workflows.
+
+The connection is **not** bundled: each company adds its hosted server as a custom connector (see
+"Multi-tenant model"). Users target Claude Desktop / claude.ai, where plugin `userConfig`
+substitution does not run — so a bundled `.mcp.json` with `${user_config.mcp_url}` would only
+produce a broken, locked connector dialog. Don't reintroduce one.
 
 The SAP B1 **MCP server itself is a separate, hosted project and is NOT in this repo.** Do not look
 for server code, request handlers, or `sap_b1_*` tool implementations here — they don't exist in
@@ -33,9 +38,10 @@ recipes). Company-specific numbers must never enter it.
 ## Multi-tenant model
 
 One hosted server runs **per company database** (one URL each). This single plugin serves all of
-them: the endpoint is entered at install via the `mcp_url` `userConfig` field, which flows into
-`.mcp.json` as `${user_config.mcp_url}`. That indirection is why skills are company-agnostic — the
-same skill text works against any tenant because all specifics are resolved live.
+them: it ships skills only, and each company adds its server URL as a **custom connector** (Claude
+Desktop / claude.ai: Settings → Connectors → Add custom connector). Keeping the connection out of
+the plugin is why skills are company-agnostic — the same skill text works against any tenant because
+all specifics are resolved live and the URL is never baked in.
 
 ## Skills layout and how they relate
 
