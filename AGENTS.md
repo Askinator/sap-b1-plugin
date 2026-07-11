@@ -54,13 +54,21 @@ all specifics are resolved live and the URL is never baked in.
   finalize** rule, and the file-attachment (`prepare_upload`/`attach_file`) flow.
 - **Task skills** — `sap-b1-lookups` (read-only balances/aging/status), `sap-b1-invoices`,
   `sap-b1-credit-memos`, `sap-b1-payments`, `sap-b1-sales-process`, `sap-b1-purchasing`,
-  `sap-b1-journal-entries`, `sap-b1-service-calls`, `sap-b1-master-data`. Each is self-contained
+  `sap-b1-journal-entries`, `sap-b1-service-calls`, `sap-b1-master-data`, `sap-b1-messages`
+  (internal SAP B1 messages/alerts), `sap-b1-live-artifacts` (refreshable Cowork dashboards).
+  Each is self-contained
   but defers cross-cutting facts to the overview/reference rather than duplicating them. The
   lifecycle skills (sales, purchasing) and credit memos share the single copy-from-base recipe in
   `reference.md` instead of each re-explaining `BaseType`/`BaseEntry`/`BaseLine`.
 
 Skills are auto-discovered and invoked based on their frontmatter **`description`** — that field is
 the trigger surface, so keep it dense with the phrasings a real user would type.
+
+**When you add or rename a skill, update all three hub docs that list the skill set:** the overview
+skill index (`skills/sap-b1-overview/SKILL.md`), the `README.md` skills list, and the task-skill list
+above in this file. These drifted twice (PRs #8/#9 added skills without touching them). `scripts/check.sh`
+now enforces this — it fails if a `skills/*/` dir is missing from any hub, and CI runs it on every PR.
+Run it locally before opening a PR: `scripts/check.sh`.
 
 ## The MCP tools skills orchestrate
 
@@ -87,6 +95,9 @@ a skill, include Danish trigger terms in the description from the first draft. S
 There are no code commands. The operations that exist:
 
 ```bash
+# Consistency check: skill-index coverage across the hub docs + manifest validation
+scripts/check.sh
+
 # Validate the plugin manifest + skills (run from repo root)
 claude plugin validate . --strict
 
