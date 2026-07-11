@@ -8,7 +8,9 @@ Thumbs.db
 # Local Claude / plugin state
 .claude/
 /.vs
-/.github
+# Ignore local .github state but keep CI workflows tracked
+/.github/*
+!/.github/workflows/
 
 # Node — only used to pin the claude CLI for `plugin validate`, not part of the plugin
 node_modules/

@@ -24,6 +24,8 @@ connector (see [Install](#install)), because each company database has its own s
   - `sap-b1-journal-entries` — manual GL postings, debits = credits.
   - `sap-b1-service-calls` — support tickets and activity logging.
   - `sap-b1-master-data` — create/maintain business partners and items.
+  - `sap-b1-messages` — send internal SAP B1 messages/alerts to users, named recipients, or a department.
+  - `sap-b1-live-artifacts` — build a persisted, refreshable Cowork dashboard backed by live SAP B1 data.
 
 ## Multi-tenant model
 
@@ -36,12 +38,12 @@ payment accounts are **resolved live** per DB, never hardcoded.
 
 **1. Install the skills**
 
-Add this repo from the plugin/marketplace section of the customize panel (Claude Desktop /
-claude.ai), then install the `sap-b1` plugin. In Claude Code the equivalent is:
-```
-/plugin marketplace add <this-repo-url-or-local-path>
-/plugin install sap-b1@sap-b1-plugins
-```
+In **Claude Desktop**, paste this repo's GitHub link — `https://github.com/Askinator/sap-b1-plugin`
+— to add it as a plugin marketplace, then install the `sap-b1` plugin. That's the whole skills
+install; no local checkout or config editing is needed.
+
+<sub>Claude Code CLI equivalent: `/plugin marketplace add https://github.com/Askinator/sap-b1-plugin`
+then `/plugin install sap-b1@sap-b1-plugins`.</sub>
 
 **2. Add your company's server as a custom connector**
 

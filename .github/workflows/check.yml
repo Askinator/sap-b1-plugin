@@ -1,0 +1,16 @@
+name: consistency
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run consistency checks
+        # scripts/check.sh skips `claude plugin validate` when the CLI is absent
+        # (it is not installed in CI); the skill-index coverage checks still run.
+        run: ./scripts/check.sh

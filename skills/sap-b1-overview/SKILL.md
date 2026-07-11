@@ -79,3 +79,5 @@ workflows:
 - `sap-b1-journal-entries` — manual G/L postings, debits = credits.
 - `sap-b1-service-calls` — support tickets and activity logging.
 - `sap-b1-master-data` — create/maintain business partners and items.
+- `sap-b1-messages` — send internal SAP B1 messages/alerts to users, named recipients, or a department.
+- `sap-b1-live-artifacts` — build a persisted, refreshable Cowork dashboard backed by live SAP B1 data.
