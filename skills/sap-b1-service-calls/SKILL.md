@@ -8,6 +8,9 @@ description: "Create and manage Service Calls (ServiceCalls) in SAP Business One
 Manage `ServiceCalls` (support tickets tied to a customer). Follow the discovery-first rule:
 resolve the customer, contact, and any referenced item/account **live** for the connected DB.
 
+When the visualize tools are available (see `sap-b1-overview` → Rendering output), render a single
+service call as a data-record card.
+
 ## Support-to-invoice workflow
 
 1. **Service call** (`ServiceCalls`) — the ticket: subject, customer, description, status.

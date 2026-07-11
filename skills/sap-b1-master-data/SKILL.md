@@ -9,6 +9,9 @@ Create and update the records that documents reference: `BusinessPartners` (cust
 `Items`. Follow the discovery-first rule — resolve groups, price lists, VAT groups, and any G/L
 determination **live** for the connected DB (see `sap-b1-overview`).
 
+When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the new
+customer/vendor/item confirmation as a data-record card before creating.
+
 ## Check it doesn't already exist first
 
 Before creating, search for a duplicate: query `BusinessPartners` (by `CardName`) or `Items` (by

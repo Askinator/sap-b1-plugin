@@ -9,6 +9,9 @@ Issue **AR credit memos** (`CreditNotes`) to customers and **AP credit memos**
 (`PurchaseCreditNotes`) from vendors, and correct posted documents. Follow the discovery-first
 rule: resolve the partner, items, G/L accounts, and VAT/tax codes **live** (see `sap-b1-overview`).
 
+When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the draft
+receipt shown for pre-posting confirmation as a data-record card.
+
 ## In SAP B1 you reverse by crediting, not deleting
 
 A **posted** invoice or journal entry is **not** deleted — it's offset by a reversing document. To

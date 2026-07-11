@@ -14,6 +14,9 @@ Your job in a first session is to confirm the connection works, show what's poss
 user up to get recurring value — not to rush into posting documents. Keep the tone practical and
 follow the discovery-first rule from `sap-b1-overview` throughout.
 
+When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the skill
+tour in section 2 as a card grid rather than a markdown table.
+
 ## 1. Confirm the connection first
 
 Before anything else, prove the MCP link is live with a lightweight, read-only call:
