@@ -55,6 +55,17 @@ capability is missing, tell the user what to enable.
 - Use raw Service Layer names (entity sets, field names, OData options) — this MCP intentionally
   mirrors Service Layer rather than inventing a friendlier vocabulary.
 
+## Rendering output
+
+If `mcp__visualize__show_widget` is available in this session, prefer it over markdown prose for
+anything structural — call `mcp__visualize__read_me` once before the first `show_widget` call. Match
+output to pattern: a capability tour or list of options → card grid; a single balance, aging summary,
+or document status → data-record card or metric cards; a draft document awaiting confirmation
+(invoice, credit memo, payment, journal entry) → data-record card styled as a receipt; multi-row
+lists (open invoices, service call queue, PO lines) → stay as markdown tables, not widgets — the
+design system reserves tables for text. If the visualize tools aren't available in this session, fall
+back to plain prose and don't mention the widget system.
+
 See `reference.md` in this skill for entity/DocObjectCode maps, the object-type / copy-from-base
 recipe, the draft-first finalize rule, and file-attachment steps. The task skills cover specific
 workflows:

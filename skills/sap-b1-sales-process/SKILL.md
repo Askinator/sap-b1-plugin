@@ -8,6 +8,9 @@ description: "Drive the SAP Business One sales lifecycle via the Service Layer M
 Create and advance sales documents. Follow the discovery-first rule: resolve the customer, items,
 and VAT/tax codes **live** for the connected DB (see `sap-b1-overview`).
 
+When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the
+document-chain status (quote → order → delivery → invoice) as a data-record card.
+
 ## The flow
 
 `Quotations` → `Orders` → `DeliveryNotes` → `Invoices`. Each stage **copies from the previous
