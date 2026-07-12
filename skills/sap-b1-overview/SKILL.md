@@ -57,8 +57,9 @@ capability is missing, tell the user what to enable.
 
 ## Rendering output
 
-When `mcp__visualize__show_widget` is available in this session, render structural output with it —
-not markdown prose. Call `mcp__visualize__read_me` once before your first `show_widget` call, then
+Render structural output through the `mcp__visualize__show_widget` tool, not markdown prose. These
+tools ship in normal chat and Cowork sessions — reach for them by default; don't wait to confirm
+they're available. Call `mcp__visualize__read_me` once before your first `show_widget` call, then
 match the widget to the output:
 
 - Capability tour or list of options → card grid.
@@ -68,7 +69,8 @@ match the widget to the output:
 - Multi-row lists (open invoices, service call queue, PO lines) → keep as markdown tables, never
   widgets; the design system reserves tables for text.
 
-When the visualize tools are absent, fall back to plain prose and don't mention the widget system.
+Only if `show_widget` is genuinely absent (a restricted deployment) fall back to plain prose, and
+don't mention the widget system.
 
 See `reference.md` in this skill for entity/DocObjectCode maps, the object-type / copy-from-base
 recipe, the draft-first finalize rule, and file-attachment steps. The task skills cover specific
