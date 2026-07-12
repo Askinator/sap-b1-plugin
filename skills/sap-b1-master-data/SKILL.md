@@ -23,15 +23,22 @@ creating a second record. Duplicate partners/items are hard to untangle later.
 1. **Pick the type.** `CardType` = `cCustomer` (customer), `cSupplier` (vendor), or `cLid` (lead).
 2. **Resolve config codes live.** The account/partner **group** (`GroupCode`) and any default
    `PriceListNum` are DB-specific — resolve valid values via `describe`/lookup, don't invent them.
-   Let SAP assign the `CardCode` unless the DB uses manual coding (ask if unsure).
-3. **Create** with `sap_b1_sl_write method="POST" path="BusinessPartners"`.
+3. **Always supply a `CardCode`.** Most SAP B1 databases do **not** auto-assign it on create —
+   unlike document `DocNum`, `CardCode` auto-numbering (General Settings → BP → "BP Code
+   Generation") is opt-in and rarely enabled. Omitting it typically fails with
+   `Code undefined [OCRD.CardCode]`. Query a couple of existing `BusinessPartners` of the same
+   `CardType` first (e.g. `$filter=CardType eq 'cSupplier'&$top=3&$select=CardCode`) to infer this
+   DB's coding convention (`S00001`, `S-ACME`, etc.), then generate a matching, unused code — don't
+   invent a convention from scratch. Only omit `CardCode` if discovery confirms auto-numbering is
+   on for this DB.
+4. **Create** with `sap_b1_sl_write method="POST" path="BusinessPartners"`.
 
 ```
 sap_b1_sl_write
   method: "POST"
   path: "BusinessPartners"
   body: {
-    "CardCode": "<manual code, or omit if auto>",
+    "CardCode": "<generated to match this DB's convention>",
     "CardName": "<name>",
     "CardType": "cCustomer",
     "GroupCode": <resolved>,
