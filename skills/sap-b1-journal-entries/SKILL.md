@@ -9,8 +9,8 @@ Post to `JournalEntries` when there is **no vendor relationship and no item flow
 paid by card, a correction, or a reclassification. For a bill from a vendor, use
 `sap-b1-invoices` (AP invoice) instead.
 
-When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the draft
-receipt shown for pre-posting confirmation as a data-record card.
+Per `sap-b1-overview` → Rendering output, render the draft receipt shown for pre-posting
+confirmation as a data-record card — every time, not conditionally.
 
 ## Hard rules
 

@@ -8,8 +8,8 @@ description: "Drive the SAP Business One purchasing lifecycle via the Service La
 Create and advance purchasing documents. Follow the discovery-first rule: resolve the vendor,
 items, and VAT/tax codes **live** for the connected DB (see `sap-b1-overview`).
 
-When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the
-document-chain status (PO → goods receipt → AP invoice) as a data-record card.
+Per `sap-b1-overview` → Rendering output, render the document-chain status
+(PO → goods receipt → AP invoice) as a data-record card — every time, not conditionally.
 
 ## The flow
 

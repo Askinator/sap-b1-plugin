@@ -9,8 +9,8 @@ Register **incoming payments** from customers (`IncomingPayments`) and **outgoin
 vendors (`VendorPayments`), matched to open invoices. Follow the discovery-first rule: resolve the
 business partner, the open invoices, and the settlement account **live** (see `sap-b1-overview`).
 
-When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the draft
-receipt shown for pre-posting confirmation as a data-record card.
+Per `sap-b1-overview` → Rendering output, render the draft receipt shown for pre-posting
+confirmation as a data-record card — every time, not conditionally.
 
 ## Decide the shape
 

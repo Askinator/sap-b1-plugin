@@ -9,8 +9,8 @@ Create AR invoices (`Invoices`) and AP invoices (`PurchaseInvoices`). Follow the
 rule: resolve the business partner, items, G/L accounts, and VAT/tax codes **live** for the
 connected DB (see `sap-b1-overview`). Never reuse codes from another company.
 
-When the visualize tools are available (see `sap-b1-overview` → Rendering output), render the draft
-receipt shown for pre-posting confirmation as a data-record card.
+Per `sap-b1-overview` → Rendering output, render the draft receipt shown for pre-posting
+confirmation as a data-record card — every time, not conditionally.
 
 ## Decide the shape
 

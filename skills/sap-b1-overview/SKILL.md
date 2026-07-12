@@ -69,6 +69,10 @@ match the widget to the output:
 - Multi-row lists (open invoices, service call queue, PO lines) → keep as markdown tables, never
   widgets; the design system reserves tables for text.
 
+This applies whether the turn is a live chat reply, a scheduled task, or an internal
+verification/test pass — don't downgrade to prose because the turn feels programmatic rather
+than conversational.
+
 Only if `show_widget` is genuinely absent (a restricted deployment) fall back to plain prose, and
 don't mention the widget system.
 
