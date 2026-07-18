@@ -58,8 +58,16 @@ collection. Two shapes:
   `ChartOfAccounts`.
 
 Tax per line uses a VAT-group field — on standard Service Layer marketing documents this is
-`VatGroup` (some localizations expose `TaxCode` instead). Confirm the field name via `describe`
-and resolve the valid code live — do not assume a rate or code name.
+`VatGroup` (some localizations expose `TaxCode` instead).
+
+**You usually don't need to set it.** When the field is omitted, SAP runs its normal tax
+determination as the line is added: item lines default from the item master's sales/purchase VAT
+group and the partner's tax status; service lines fall back to G/L-account or partner defaults,
+which are configured less often. So **omit it by default and let SAP derive it.** Resolve and set
+the code explicitly only when (a) the user asks for a specific tax treatment, (b) the post fails
+with a missing/invalid tax code error, or (c) you already know this DB has no default for the
+line (more common on service lines). When you do set it, resolve the valid code live — never
+assume a rate or code name.
 
 ## Object types (for copy-from-base and `BaseType`)
 

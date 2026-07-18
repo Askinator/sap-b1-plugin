@@ -24,8 +24,9 @@ receipt shown for pre-posting confirmation as a data-record card.
 1. **Identify the accounts.** For an expense paid by card: one debit line to the expense account,
    one credit line to the payment account (card/bank/cash). Resolve both from `ChartOfAccounts` by
    name (e.g. filter `contains(Name,'…')`); if several match, show them and ask.
-2. **Confirm line fields for this DB.** `sap_b1_discover action="describe" name="JournalEntries"`
-   and describe the line type (search for `JournalEntryLines`) if unsure.
+2. **Confirm line fields for this DB — only if unsure** (and not already described this session):
+   `sap_b1_discover action="describe" name="JournalEntries"`, and describe the line type (search
+   for `JournalEntryLines`). The payload shape below is standard — trust it until a call fails.
 3. **Show a receipt and confirm.** Present the lines and the debit/credit totals in chat. If the
    user wants a reviewable SAP draft, create one with `sap_b1_create_draft`
    (`DocObjectCode: "oJournalEntries"`) and capture its `DraftEntry`.

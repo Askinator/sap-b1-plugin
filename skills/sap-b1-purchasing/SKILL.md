@@ -27,8 +27,10 @@ and keeps the base document's status in sync. You can skip stages (e.g. PO strai
 
 1. **Resolve the vendor** (`BusinessPartners` → `CardCode`, a supplier). If ambiguous, ask.
 2. **Create the purchase order** with item lines (`ItemCode` + `Quantity`, optional `UnitPrice`)
-   or service lines (`AccountCode` + `DocType: "dDocument_Service"`). Resolve every code and the
-   `VatGroup` live.
+   or service lines (`AccountCode` + `DocType: "dDocument_Service"`). Resolve every
+   `ItemCode`/`AccountCode` live — batch these with the vendor lookup in one round trip. Omit
+   `VatGroup` by default (SAP derives it via tax determination) — see the VAT note in
+   `sap-b1-overview/reference.md`.
 3. **Receive goods by copying from the PO.** Resolve the PO's `DocEntry` (query `PurchaseOrders`,
    filter on `DocNum`), then set `BaseType: 22`/`BaseEntry`/`BaseLine` on each `PurchaseDeliveryNotes`
    line — copy only the quantities actually received (partial receipts leave the PO partially open).
@@ -52,7 +54,7 @@ sap_b1_sl_write
     "DocDate": "2026-07-08",
     "DocDueDate": "2026-07-22",
     "DocumentLines": [
-      { "ItemCode": "<resolved>", "Quantity": 10, "UnitPrice": 42.00, "VatGroup": "<resolved>" }
+      { "ItemCode": "<resolved>", "Quantity": 10, "UnitPrice": 42.00 }
     ]
   }
 ```
@@ -74,8 +76,8 @@ sap_b1_sl_write
 
 - On a PO, `DocDueDate` is the required-by/delivery date. Use the user's date or a sensible default
   and say which.
-- Dates are `YYYY-MM-DD`. Resolve items, accounts, and VAT codes live — never reuse codes from
-  another company.
+- Dates are `YYYY-MM-DD`. Resolve items and accounts live — never reuse codes from another
+  company. Set `VatGroup` only when needed, per the VAT note in `sap-b1-overview/reference.md`.
 - Reading status only (open POs, what's not yet received)? Use `sap-b1-lookups`.
 - If write tools aren't exposed, you can still read these documents with `sap_b1_get_document` /
   `sap_b1_sl_query`; tell the user creating needs a write-capable capability set.

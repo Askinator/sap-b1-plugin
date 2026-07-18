@@ -29,7 +29,9 @@ document** rather than retyping lines, so SAP carries pricing and keeps the base
 1. **Resolve the customer** (`BusinessPartners` → `CardCode`). If ambiguous, list matches and ask.
 2. **Create the first document** (usually a quotation or order) with item lines
    (`ItemCode` + `Quantity`, optional `UnitPrice`) or service lines (`AccountCode` +
-   `DocType: "dDocument_Service"`). Resolve every `ItemCode`/`AccountCode` and the `VatGroup` live.
+   `DocType: "dDocument_Service"`). Resolve every `ItemCode`/`AccountCode` live — batch these
+   with the customer lookup in one round trip. Omit `VatGroup` by default (SAP derives it via tax
+   determination) — see the VAT note in `sap-b1-overview/reference.md`.
 3. **Advance by copying from the base.** To make the next document, resolve the base document's
    `DocEntry` (query the entity, filter on `DocNum` — the `DocNum` the user quotes is not the key),
    then set `BaseType`/`BaseEntry`/`BaseLine` on each target line. See the copy-from-base recipe in
@@ -51,7 +53,7 @@ sap_b1_sl_write
     "DocDate": "2026-07-08",
     "DocDueDate": "2026-07-22",
     "DocumentLines": [
-      { "ItemCode": "<resolved>", "Quantity": 5, "VatGroup": "<resolved>" }
+      { "ItemCode": "<resolved>", "Quantity": 5 }
     ]
   }
 ```
@@ -77,7 +79,7 @@ To make the final invoice, hand off to `sap-b1-invoices` and copy from the deliv
 - Reading status only? Use `sap-b1-lookups` — no writes.
 - `DocDueDate` on an order is the delivery/valid-until date; use the user's date or a sensible
   default and say which.
-- Dates are `YYYY-MM-DD`. Resolve items, accounts, and VAT codes live — never reuse codes from
-  another company.
+- Dates are `YYYY-MM-DD`. Resolve items and accounts live — never reuse codes from another
+  company. Set `VatGroup` only when needed, per the VAT note in `sap-b1-overview/reference.md`.
 - If write tools aren't exposed, you can still read these documents with `sap_b1_get_document` /
   `sap_b1_sl_query`; tell the user creating needs a write-capable capability set.

@@ -76,8 +76,9 @@ Update with `PATCH Items('<ItemCode>')`.
 
 ## Notes
 
-- **Confirm fields for this DB.** `sap_b1_discover action="describe" name="BusinessPartners"` (or
-  `Items`) — group codes, price lists, and determination fields vary widely by configuration.
+- **Confirm fields for this DB** (skip if already described this session).
+  `sap_b1_discover action="describe" name="BusinessPartners"` (or `Items`) — group codes, price
+  lists, and determination fields vary widely by configuration.
 - Master data is not financial, so there's no draft step — but still show the user what you're
   about to create and confirm the resolved group/price-list/VAT values before posting.
 - If write tools aren't exposed, you can still read master data with `sap_b1_sl_query`; tell the

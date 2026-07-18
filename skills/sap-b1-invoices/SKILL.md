@@ -26,10 +26,13 @@ receipt shown for pre-posting confirmation as a data-record card.
 1. **Resolve the partner.** Query `BusinessPartners` for the `CardCode` (filter on `CardName`).
    If ambiguous, list matches and ask.
 2. **Resolve line codes live.** For item lines, confirm each `ItemCode` from `Items`. For service
-   lines, resolve each `AccountCode` from `ChartOfAccounts`. Resolve the tax/VAT code from the tax
-   entity — do not assume a rate.
-3. **Confirm fields for this DB.** `sap_b1_discover action="describe" name="Invoices"` (or
-   `PurchaseInvoices`) if unsure of a field name.
+   lines, resolve each `AccountCode` from `ChartOfAccounts`. Steps 1–2 are independent reads —
+   batch them in one round trip (parallel calls, or one SQL query if enabled). Leave the VAT group
+   to SAP's tax determination unless a specific treatment is needed — see the VAT note in
+   `sap-b1-overview/reference.md`.
+3. **Confirm fields for this DB** — only if unsure of a field name and you haven't already
+   described this entity in this session: `sap_b1_discover action="describe" name="Invoices"` (or
+   `PurchaseInvoices`).
 4. **Show a receipt and confirm.** Summarize the partner, lines, totals, and tax in chat before
    posting. If the user wants a reviewable SAP draft, create one with `sap_b1_create_draft` and
    capture its `DraftEntry`.
@@ -48,7 +51,7 @@ sap_b1_create_draft
   DocDate: "2026-07-01"
   DocDueDate: "2026-07-15"
   DocumentLines: [
-    { "ItemCode": "<resolved>", "Quantity": 2, "VatGroup": "<resolved>" }
+    { "ItemCode": "<resolved>", "Quantity": 2 }
   ]
 ```
 
@@ -60,7 +63,7 @@ sap_b1_create_draft
   DocType: "dDocument_Service"
   DocDate: "2026-07-01"
   DocumentLines: [
-    { "AccountCode": "<resolved G/L>", "LineTotal": 1000.00, "VatGroup": "<resolved>" }
+    { "AccountCode": "<resolved G/L>", "LineTotal": 1000.00, "VatGroup": "<resolved, if this DB has no service-line default>" }
   ]
 ```
 
@@ -72,7 +75,9 @@ field). For AP, use `path="PurchaseInvoices"`.
 
 - Dates are `YYYY-MM-DD`. Use the user's date or today.
 - `VatGroup` is the standard Service Layer line VAT field; some localizations use `TaxCode`.
-  Confirm the field name via `describe` and resolve the code value live.
+  **Omit it by default** — SAP derives it via tax determination. Set it (resolved live) only when
+  the user needs a specific treatment or the post errors on a missing tax code — see the VAT note
+  in `sap-b1-overview/reference.md`.
 - **AP invoices:** set `NumAtCard` to the vendor's own invoice number when the user gives it —
   it's how AP invoices are matched and found later.
 - To bill from an existing sales order or delivery, copy from the base document instead of

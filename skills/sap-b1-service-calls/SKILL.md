@@ -21,10 +21,10 @@ service call as a data-record card.
 
 1. **Resolve the customer.** Query `BusinessPartners` for `CardCode` (filter on `CardName`). Get
    the `ContactCode` from the partner's contacts if the user names a contact person.
-2. **Confirm fields for this DB.** `sap_b1_discover action="describe" name="ServiceCalls"` — field
-   names for subject, status, origin, and problem type vary by configuration, so confirm before
-   writing. Status/priority/type codes are configurable per DB; resolve valid values live rather
-   than assuming numbers.
+2. **Confirm fields for this DB** (skip if already described this session).
+   `sap_b1_discover action="describe" name="ServiceCalls"` — field names for subject, status,
+   origin, and problem type vary by configuration, so confirm before writing. Status/priority/type
+   codes are configurable per DB; resolve valid values live rather than assuming numbers.
 3. **Create the call** with `sap_b1_sl_write method="POST" path="ServiceCalls"`.
 4. **Update** an existing call with `sap_b1_sl_write method="PATCH" path="ServiceCalls(<id>)"`.
 5. **Read** calls with `sap_b1_sl_query entity="ServiceCalls"` (filter by `CustomerCode`, status,
