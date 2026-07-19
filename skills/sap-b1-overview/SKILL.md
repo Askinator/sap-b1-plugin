@@ -71,14 +71,24 @@ capability is missing, tell the user what to enable.
 
 ## Rendering output
 
-If `mcp__visualize__show_widget` is available in this session, prefer it over markdown prose for
-anything structural — call `mcp__visualize__read_me` once before the first `show_widget` call. Match
-output to pattern: a capability tour or list of options → card grid; a single balance, aging summary,
-or document status → data-record card or metric cards; a draft document awaiting confirmation
-(invoice, credit memo, payment, journal entry) → data-record card styled as a receipt; multi-row
-lists (open invoices, service call queue, PO lines) → stay as markdown tables, not widgets — the
-design system reserves tables for text. If the visualize tools aren't available in this session, fall
-back to plain prose and don't mention the widget system.
+Render structural output through the `mcp__visualize__show_widget` tool, not markdown prose. These
+tools ship in normal chat and Cowork sessions — reach for them by default; don't wait to confirm
+they're available. Call `mcp__visualize__read_me` once before your first `show_widget` call, then
+match the widget to the output:
+
+- Capability tour or list of options → card grid.
+- A single balance, aging summary, or document status → data-record card or metric cards.
+- A draft document awaiting confirmation (invoice, credit memo, payment, journal entry) →
+  data-record card styled as a receipt.
+- Multi-row lists (open invoices, service call queue, PO lines) → keep as markdown tables, never
+  widgets; the design system reserves tables for text.
+
+This applies whether the turn is a live chat reply, a scheduled task, or an internal
+verification/test pass — don't downgrade to prose because the turn feels programmatic rather
+than conversational.
+
+Only if `show_widget` is genuinely absent (a restricted deployment) fall back to plain prose, and
+don't mention the widget system.
 
 See `reference.md` in this skill for entity/DocObjectCode maps, the object-type / copy-from-base
 recipe, the draft-first finalize rule, and file-attachment steps. The task skills cover specific
