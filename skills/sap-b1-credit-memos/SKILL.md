@@ -58,16 +58,17 @@ sap_b1_sl_write
   }
 ```
 
-Standalone item line: `{ "ItemCode": "<resolved>", "Quantity": 1, "VatGroup": "<resolved>" }`.
+Standalone item line: `{ "ItemCode": "<resolved>", "Quantity": 1 }`.
 Standalone service line: header `DocType: "dDocument_Service"`, line
-`{ "AccountCode": "<resolved G/L>", "LineTotal": 500.00, "VatGroup": "<resolved>" }`.
+`{ "AccountCode": "<resolved G/L>", "LineTotal": 500.00 }`.
 
 ## Notes
 
 - Copying from the invoice is safest — it reverses the exact tax and inventory postings. Prefer it
   over hand-built lines whenever a source invoice exists.
-- Dates are `YYYY-MM-DD`. `VatGroup` is the standard line VAT field (some localizations use
-  `TaxCode`); confirm via `describe` and resolve the code live.
+- Dates are `YYYY-MM-DD`. Omit `VatGroup` by default — SAP derives it via tax determination
+  (and a copy-from-base reverses the invoice's tax exactly). Set it, resolved live, only when
+  needed — see the VAT note in `sap-b1-overview/reference.md`.
 - If the user actually wants a *payment refund* rather than a credit, see `sap-b1-payments`.
 - If write tools aren't exposed, you can still read credit memos with `sap_b1_sl_query`; tell the
   user creating needs a write-capable capability set.

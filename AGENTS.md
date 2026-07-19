@@ -35,6 +35,13 @@ not baked in. `skills/sap-b1-overview/reference.md` is the deliberate exception 
 **tenant-invariant** knowledge (entity-set names, `DocObjectCode`s, line-type shapes, lookup
 recipes). Company-specific numbers must never enter it.
 
+The efficiency corollary (added in 0.6.0): discovery-first means *never guess*, not *re-discover
+every task*. Skills phrase `describe`/resolve steps as **conditional and session-aware** ("only if
+unsure, skip if already described this session"), batch independent lookups into one round trip,
+and let SAP's own defaulting work (e.g. omit `VatGroup` and let tax determination derive it — see
+the VAT note in `reference.md`). When adding a skill, don't reintroduce unconditional per-task
+describe steps or mark SAP-derivable fields as always-required.
+
 ## Multi-tenant model
 
 One hosted server runs **per company database** (one URL each). This single plugin serves all of

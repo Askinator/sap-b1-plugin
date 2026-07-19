@@ -25,6 +25,20 @@ account from memory or from another company. **Resolve them live** against the c
 
 If you cannot resolve a required code, **stop and ask the user** rather than inventing one.
 
+### Resolve once, and in one round trip
+
+Discovery-first means *never guess* — it does not mean *re-discover*. Within a conversation
+against the same company DB:
+
+- **Reuse what you already resolved.** An entity you described, or a `CardCode`, account, item, or
+  VAT code you resolved earlier in this session, is still valid — don't describe or look it up
+  again just because a different skill was invoked for the next task.
+- **Describe on uncertainty, not ritual.** Run `describe` when you're unsure of a field name or a
+  call failed — not as a mandatory step before every operation.
+- **Batch independent lookups.** Resolving a partner and an item (or several accounts) are
+  independent reads — issue them as parallel tool calls in a single turn, or fold them into one
+  `sap_b1_sql_query` call when SQL is enabled, instead of paying sequential round trips.
+
 ## Which tool for which job
 
 | Need | Tool |

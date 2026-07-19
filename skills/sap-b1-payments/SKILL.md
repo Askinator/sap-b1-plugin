@@ -31,7 +31,8 @@ confirmation as a data-record card — every time, not conditionally.
 3. **Match payment to invoices.** Each settled invoice goes in the `PaymentInvoices` collection:
    `DocEntry` (the invoice), `InvoiceType` (its object type — `13` AR invoice, `18` AP invoice —
    see the object-type map in `sap-b1-overview/reference.md`), and `SumApplied`.
-4. **Confirm the settlement account** with `describe` if unsure of the field name for this DB.
+4. **Confirm the settlement account** with `describe` only if unsure of the field name for this
+   DB and you haven't already described the entity this session.
 5. **Show a receipt and confirm**, then post with `sap_b1_sl_write`
    (`POST IncomingPayments` / `POST VendorPayments`). Payments post immediately — there is no
    separate "approve" step — so confirm the amounts and account before sending.

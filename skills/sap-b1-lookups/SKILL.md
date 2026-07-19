@@ -25,10 +25,11 @@ tables.
 
 1. **Resolve the partner.** Query `BusinessPartners` for `CardCode` (filter on `CardName`). If
    ambiguous, list matches and ask which one.
-2. **Confirm fields for this DB.** Balance and aging field names vary by configuration —
-   `sap_b1_discover action="describe" name="BusinessPartners"` before relying on a specific field
-   (commonly `CurrentAccountBalance` for open balance; aging buckets are usually a separate
-   report, not a plain field — see Notes).
+2. **Confirm fields for this DB — only if unsure.** Try the common fields first
+   (`CurrentAccountBalance` for open balance; aging buckets are usually a separate report, not a
+   plain field — see Notes). Run `sap_b1_discover action="describe" name="BusinessPartners"` only
+   when a field errors or comes back empty, and skip it entirely if you already described the
+   entity this session.
 3. **Query, don't write.** Use `sap_b1_sl_query` (or `sap_b1_sql_query` if enabled) — never
    `sap_b1_sl_write` or `sap_b1_create_draft` for a lookup task.
 4. **Present a compact summary**: partner name, the number(s) asked for, and — for lists — a short
