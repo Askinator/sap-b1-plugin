@@ -64,6 +64,10 @@ Standalone service line: header `DocType: "dDocument_Service"`, line
 
 ## Notes
 
+- **File in the conversation?** If the user attached a PDF, receipt, or email, ask with
+  `AskUserQuestion` whether it should be attached to the credit memo **before** posting — fold it
+  into the confirmation step, not into a follow-up after the document exists. See the attachment
+  section in `sap-b1-overview/reference.md`.
 - Copying from the invoice is safest — it reverses the exact tax and inventory postings. Prefer it
   over hand-built lines whenever a source invoice exists.
 - Dates are `YYYY-MM-DD`. Omit `VatGroup` by default — SAP derives it via tax determination

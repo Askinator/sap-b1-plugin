@@ -76,6 +76,10 @@ To make the final invoice, hand off to `sap-b1-invoices` and copy from the deliv
 
 ## Notes
 
+- **File in the conversation?** If the user attached a customer PO, email, or PDF, ask with
+  `AskUserQuestion` whether it should be attached to the document **before** creating it —
+  alongside the confirmation, not after. See the attachment section in
+  `sap-b1-overview/reference.md`.
 - Reading status only? Use `sap-b1-lookups` — no writes.
 - `DocDueDate` on an order is the delivery/valid-until date; use the user's date or a sensible
   default and say which.

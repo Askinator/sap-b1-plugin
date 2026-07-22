@@ -59,6 +59,9 @@ For an outgoing/vendor payment, use `path: "VendorPayments"` and `InvoiceType: 1
 
 ## Notes
 
+- **File in the conversation?** If the user attached a bank advice, receipt, or email, ask with
+  `AskUserQuestion` whether it should be attached to the payment **before** posting — alongside the
+  confirmation, not after. See the attachment section in `sap-b1-overview/reference.md`.
 - **`SumApplied` per line must total the settlement sum.** A payment can settle several invoices
   (partial payments are fine); make the applied amounts add up to `TransferSum`/`CashSum`.
 - A payment with no `PaymentInvoices` posts as an unallocated payment on account — only do that if
