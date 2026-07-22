@@ -58,7 +58,8 @@ all specifics are resolved live and the URL is never baked in.
 - **`sap-b1-overview`** — orientation: the discovery-first rule, the tool map, and tool-availability
   caveats. Its `reference.md` is the shared tenant-invariant knowledge base other skills point to —
   entity/DocObjectCode maps, the object-type table, the **copy-from-base** recipe, the **draft-first
-  finalize** rule, and the file-attachment (`prepare_upload`/`attach_file`) flow.
+  finalize** rule, and the file-attachment (`prepare_upload`/`attach_file`) flow — including the
+  rule that attachment intent is settled with an `AskUserQuestion` *before* the record is written.
 - **Task skills** — `sap-b1-lookups` (read-only balances/aging/status), `sap-b1-invoices`,
   `sap-b1-credit-memos`, `sap-b1-payments`, `sap-b1-sales-process`, `sap-b1-purchasing`,
   `sap-b1-journal-entries`, `sap-b1-service-calls`, `sap-b1-master-data`, `sap-b1-messages`

@@ -86,6 +86,9 @@ hand off to `sap-b1-invoices` — resolve the service item or G/L account and VA
 
 ## Notes
 
+- **File in the conversation?** Tickets often start from a customer email, screenshot, or PDF —
+  ask with `AskUserQuestion` whether to attach it to the service call **before** creating it, not
+  after. See the attachment section in `sap-b1-overview/reference.md`.
 - Show the created call's key (`ServiceCallID`) back to the user.
 - If write tools are not exposed, you can still read calls with `sap_b1_sl_query`; explain that
   creating/updating needs a write-capable capability set.

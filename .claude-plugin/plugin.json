@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "sap-b1",
   "displayName": "SAP Business One",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Skills for working with SAP Business One over a hosted Service Layer MCP server — the sales and purchasing lifecycles, invoices, credit memos, payments, journal entries, service calls, master data, and read-only lookups. Connect your company's server as a custom connector; chart-of-accounts and VAT specifics are resolved live per company database, so one plugin serves every tenant.",
   "author": {
     "name": "Aske Paustian"

@@ -74,6 +74,9 @@ sap_b1_sl_write
 
 ## Notes
 
+- **File in the conversation?** Vendor confirmations and invoices often arrive as a PDF or email —
+  ask with `AskUserQuestion` whether to attach it to the document **before** posting, alongside the
+  confirmation, not after. See the attachment section in `sap-b1-overview/reference.md`.
 - On a PO, `DocDueDate` is the required-by/delivery date. Use the user's date or a sensible default
   and say which.
 - Dates are `YYYY-MM-DD`. Resolve items and accounts live — never reuse codes from another

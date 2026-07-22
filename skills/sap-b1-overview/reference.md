@@ -136,6 +136,27 @@ orphan draft duplicating a posted document.
 
 ## Attaching files (receipts, PDFs)
 
+### Settle attachment intent *before* creating the record
+
+Whenever a file is present in the conversation (a PDF, receipt, email, image the user attached or
+pointed at) and the task will create or find a SAP record, ask **up front — before any write** —
+whether that file should end up on the record. Ask it with `AskUserQuestion` as part of the same
+turn where you confirm the document details, not as a follow-up after the record exists. Asking
+afterwards makes the attachment feel like an afterthought and forces a second round trip.
+
+Typical question — header `Attachment`, one question, options:
+
+- **Attach to the record** — upload `<filename>` to the invoice/journal entry/service call once
+  it's created.
+- **Don't attach** — create the record only; the file stays in chat.
+
+Then carry the answer through: create/locate the record, and if they said yes, run the upload
+immediately after and report both in one summary ("Invoice 1042 posted, `bilag.pdf` attached").
+If the user already said something like "book this receipt and attach the PDF", that's the answer —
+don't re-ask.
+
+### The upload flow
+
 Two-step, because the MCP host usually can't see Claude's upload sandbox:
 
 1. `sap_b1_prepare_upload` (no args) → returns `{ token, uploadUrl }`.

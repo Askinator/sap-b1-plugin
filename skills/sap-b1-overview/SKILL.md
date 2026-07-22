@@ -66,6 +66,10 @@ capability is missing, tell the user what to enable.
 - Read before you write. Confirm the entity shape with `sap_b1_discover`, then act.
 - Prefer **drafts** for anything financial: create with `sap_b1_create_draft`, show the user the
   compact receipt, and only add/post the real document after they confirm.
+- **Settle attachment intent up front.** If a file is in the conversation (PDF, receipt, email,
+  image) and you're about to create or find a record, ask with `AskUserQuestion` whether it should
+  be attached **before** writing — not after the record exists. See the attachment section in
+  `reference.md`.
 - Use raw Service Layer names (entity sets, field names, OData options) — this MCP intentionally
   mirrors Service Layer rather than inventing a friendlier vocabulary.
 

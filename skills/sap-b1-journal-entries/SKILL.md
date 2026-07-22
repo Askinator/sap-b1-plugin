@@ -54,6 +54,10 @@ To post the real entry (after confirmation), send the same `JournalEntryLines`/h
 
 ## Notes
 
+- **File in the conversation?** Receipts and bilag usually arrive as a PDF or image — ask with
+  `AskUserQuestion` whether to attach it to the journal entry **before** posting, alongside the
+  confirmation, not after the entry exists. See the attachment section in
+  `sap-b1-overview/reference.md`.
 - Include VAT only when the user provides it and you can resolve the tax account/code live;
   otherwise post net and say so.
 - Dates are `YYYY-MM-DD`.

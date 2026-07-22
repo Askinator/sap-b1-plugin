@@ -73,6 +73,10 @@ field). For AP, use `path="PurchaseInvoices"`.
 
 ## Notes
 
+- **File in the conversation?** If the user attached a PDF, receipt, or email, ask with
+  `AskUserQuestion` whether it should be attached to the invoice **before** posting — fold it into
+  step 4's confirmation, not into a follow-up after the document exists. See the attachment section
+  in `sap-b1-overview/reference.md`.
 - Dates are `YYYY-MM-DD`. Use the user's date or today.
 - `VatGroup` is the standard Service Layer line VAT field; some localizations use `TaxCode`.
   **Omit it by default** — SAP derives it via tax determination. Set it (resolved live) only when
