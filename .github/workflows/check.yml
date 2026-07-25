@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run consistency checks
-        # scripts/check.sh skips `claude plugin validate` when the CLI is absent
-        # (it is not installed in CI); the skill-index coverage checks still run.
+        # Deliberately no claude CLI here: manifest validation stays a local
+        # pre-release step (run scripts/check.sh before bumping the version).
+        # CI covers the skill-index coverage checks, which need no CLI.
         run: ./scripts/check.sh
