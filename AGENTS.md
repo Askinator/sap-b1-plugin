@@ -42,6 +42,24 @@ and let SAP's own defaulting work (e.g. omit `VatGroup` and let tax determinatio
 the VAT note in `reference.md`). When adding a skill, don't reintroduce unconditional per-task
 describe steps or mark SAP-derivable fields as always-required.
 
+## This repo is public — keep tenant data out of it
+
+Everything here is world-readable: the skills, the commit history, issue and PR bodies, and any
+transcript pasted into them. Debugging usually happens against a **live company database**, so it
+is easy to carry a real value out of a session and into a public artifact without noticing.
+
+Nothing tenant-identifying goes in. That means no company or customer names, no `CardCode`s,
+contact names, addresses, or emails, no G/L account numbers, tax codes, or item codes, no server
+URLs or connector endpoints, and no credentials. Document numbers, dates, and amounts from a real
+session are best avoided too — even on a demo DB they read as production data to anyone outside
+the project.
+
+Illustrate with invented values instead: `C50000`-style placeholders, `<resolved>`, or numbers
+chosen to be obviously fictional. When a real session prompted a change, describe the **behaviour**
+it exposed and leave the identifiers out — the finding is what matters, not the record it came
+from. This applies as much to a PR body or commit message as to a skill file; the git history is
+the part that can't be quietly edited later.
+
 ## Multi-tenant model
 
 One hosted server runs **per company database** (one URL each). This single plugin serves all of

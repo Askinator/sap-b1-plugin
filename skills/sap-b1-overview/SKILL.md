@@ -55,11 +55,17 @@ against the same company DB:
 
 ## Tool availability varies
 
-The server gates tools with JSON capabilities. A restricted deployment may expose only
-`sap_b1_get_document`; SQL tools exist only when the server has a SQL dialect configured. If a
-tool you expected is missing, fall back: use `sap_b1_sl_query` when `sap_b1_sql_query` is
-unavailable, and read documents you cannot write. Do not assume a tool is present — if a needed
-capability is missing, tell the user what to enable.
+**First, load the tools — then judge what's available.** Some hosts defer tool schemas: the
+`sap_b1_*` tools are listed by name only and can't be called until loaded. A tool you "can't see"
+in that state is unloaded, not absent. Load the whole set in one call
+(`ToolSearch query="sap_b1"`) before concluding a capability is missing — otherwise it's easy to
+tell the user their deployment is read-only when the write tools were there all along.
+
+Once they're loaded, the real gating applies. The server gates tools with JSON capabilities. A
+restricted deployment may expose only `sap_b1_get_document`; SQL tools exist only when the server
+has a SQL dialect configured. If a tool you expected is missing, fall back: use `sap_b1_sl_query`
+when `sap_b1_sql_query` is unavailable, and read documents you cannot write. Do not assume a tool
+is present — if a needed capability is missing, tell the user what to enable.
 
 ## Working style
 
@@ -90,6 +96,11 @@ match the widget to the output:
 This applies whether the turn is a live chat reply, a scheduled task, or an internal
 verification/test pass — don't downgrade to prose because the turn feels programmatic rather
 than conversational.
+
+**Foreign-currency documents carry both amounts, each labelled.** Put the transaction currency on
+the lines (what the partner is billed — `1.000,00 EUR`), the local-currency total with its code
+(`7.460,00 DKK`), and the document's exchange rate. Never render a bare number that could be read
+as either. Report the values SAP returned on the created document — don't compute or predict them.
 
 Only if `show_widget` is genuinely absent (a restricted deployment) fall back to plain prose, and
 don't mention the widget system.
