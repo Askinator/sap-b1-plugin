@@ -8,9 +8,20 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Claude Code CLI
+        # Needed for the manifest validation in scripts/check.sh — without it the
+        # script takes its skip branch and the manifests are never validated in CI.
+        # `plugin validate` reads local manifests only: it needs no auth and makes
+        # no network calls, so no token is required here.
+        # Pinned deliberately: marketplace.json is validated with --strict, so a new
+        # warning class in a future CLI release would fail unrelated PRs. Bump on
+        # purpose, not by drift.
+        run: npm install -g @anthropic-ai/claude-code@2.1.220
       - name: Run consistency checks
-        # scripts/check.sh skips `claude plugin validate` when the CLI is absent
-        # (it is not installed in CI); the skill-index coverage checks still run.
         run: ./scripts/check.sh
