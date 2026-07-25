@@ -6,11 +6,12 @@ description: "Apply payments in SAP Business One via the Service Layer MCP — i
 # SAP B1 — payments
 
 Register **incoming payments** from customers (`IncomingPayments`) and **outgoing payments** to
-vendors (`VendorPayments`), matched to open invoices. Follow the discovery-first rule: resolve the
-business partner, the open invoices, and the settlement account **live** (see `sap-b1-overview`).
+vendors (`VendorPayments`), matched to open invoices. **Read `sap-b1-overview` before your first
+tool call** — it carries the output-rendering policy and the tool-availability fallbacks that apply
+here.
 
-Per `sap-b1-overview` → Rendering output, render the draft receipt shown for pre-posting
-confirmation as a data-record card — every time, not conditionally.
+Follow the discovery-first rule: resolve the business partner, the open invoices, and the
+settlement account **live** for the connected DB.
 
 ## Decide the shape
 
@@ -35,7 +36,9 @@ confirmation as a data-record card — every time, not conditionally.
    DB and you haven't already described the entity this session.
 5. **Show a receipt and confirm**, then post with `sap_b1_sl_write`
    (`POST IncomingPayments` / `POST VendorPayments`). Payments post immediately — there is no
-   separate "approve" step — so confirm the amounts and account before sending.
+   separate "approve" step — so confirm the amounts and account before sending. If a bank advice
+   or receipt is in the conversation, settle attachment intent in this same turn — see the
+   attachment section in `sap-b1-overview/reference.md`.
 
 ## Payload shape (incoming payment, bank transfer)
 
@@ -45,10 +48,10 @@ sap_b1_sl_write
   path: "IncomingPayments"
   body: {
     "CardCode": "<resolved>",
-    "DocDate": "2026-07-08",
+    "DocDate": "<today, YYYY-MM-DD>",
     "TransferAccount": "<resolved bank G/L>",
     "TransferSum": 1250.00,
-    "TransferDate": "2026-07-08",
+    "TransferDate": "<today, YYYY-MM-DD>",
     "PaymentInvoices": [
       { "DocEntry": <invoice DocEntry>, "InvoiceType": 13, "SumApplied": 1250.00 }
     ]
@@ -59,9 +62,6 @@ For an outgoing/vendor payment, use `path: "VendorPayments"` and `InvoiceType: 1
 
 ## Notes
 
-- **File in the conversation?** If the user attached a bank advice, receipt, or email, ask with
-  `AskUserQuestion` whether it should be attached to the payment **before** posting — alongside the
-  confirmation, not after. See the attachment section in `sap-b1-overview/reference.md`.
 - **`SumApplied` per line must total the settlement sum.** A payment can settle several invoices
   (partial payments are fine); make the applied amounts add up to `TransferSum`/`CashSum`.
 - A payment with no `PaymentInvoices` posts as an unallocated payment on account — only do that if

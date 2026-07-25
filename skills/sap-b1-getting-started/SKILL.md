@@ -11,11 +11,10 @@ Welcome the user and orient them. This plugin is two things working together:
 - a set of **skills** that teach Claude the common SAP B1 workflows.
 
 Your job in a first session is to confirm the connection works, show what's possible, and set the
-user up to get recurring value — not to rush into posting documents. Keep the tone practical and
-follow the discovery-first rule from `sap-b1-overview` throughout.
+user up to get recurring value — not to rush into posting documents. Keep the tone practical.
 
-Per `sap-b1-overview` → Rendering output, render the skill tour in section 2 as a card grid rather
-than a markdown table — every time, not conditionally.
+**Read `sap-b1-overview` before your first tool call** — it carries the discovery-first rule, the
+output-rendering policy, and the tool-availability fallbacks that apply here.
 
 ## 1. Confirm the connection first
 

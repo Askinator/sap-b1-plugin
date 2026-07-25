@@ -6,9 +6,12 @@ description: "Send internal SAP Business One messages/alerts (Messages entity) v
 # SAP B1 — internal messages
 
 Send `Messages` (the internal system message a user sees as an alert/mailbox icon inside the SAP
-B1 client — not email or SMS, unless the user explicitly asks for those channels too). Follow the
-discovery-first rule: resolve every recipient **live** against the connected DB, never guess a
-`UserCode` or department code.
+B1 client — not email or SMS, unless the user explicitly asks for those channels too). **Read
+`sap-b1-overview` before your first tool call** — it carries the output-rendering policy and the
+tool-availability fallbacks that apply here.
+
+Follow the discovery-first rule: resolve every recipient **live** against the connected DB, never
+guess a `UserCode` or department code.
 
 ## Steps
 

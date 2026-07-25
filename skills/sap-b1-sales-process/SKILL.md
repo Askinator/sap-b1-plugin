@@ -5,11 +5,11 @@ description: "Drive the SAP Business One sales lifecycle via the Service Layer M
 
 # SAP B1 — sales process (quotation → order → delivery → invoice)
 
-Create and advance sales documents. Follow the discovery-first rule: resolve the customer, items,
-and VAT/tax codes **live** for the connected DB (see `sap-b1-overview`).
+Create and advance sales documents. **Read `sap-b1-overview` before your first tool call** — it
+carries the output-rendering policy and the tool-availability fallbacks that apply here.
 
-Per `sap-b1-overview` → Rendering output, render the document-chain status
-(quote → order → delivery → invoice) as a data-record card — every time, not conditionally.
+Follow the discovery-first rule: resolve the customer, items, and VAT/tax codes **live** for the
+connected DB.
 
 ## The flow
 
@@ -38,8 +38,10 @@ document** rather than retyping lines, so SAP carries pricing and keeps the base
    `sap-b1-overview/reference.md`. Copy only the lines/quantities being fulfilled — partial
    deliveries and partial invoicing are normal and leave the base document partially open.
 4. **Show a receipt and confirm** before posting each document with `sap_b1_sl_write`
-   (`POST Orders`, `POST DeliveryNotes`, …). Use `sap_b1_create_draft` first only when the user
-   wants a reviewable SAP draft; finalize per the draft-first rule in `reference.md`.
+   (`POST Orders`, `POST DeliveryNotes`, …). If a customer PO or email is in the conversation,
+   settle attachment intent in this same turn — see the attachment section in
+   `sap-b1-overview/reference.md`. Use `sap_b1_create_draft` first only when the user wants a
+   reviewable SAP draft; finalize per the draft-first rule in `reference.md`.
 
 ## Payload shapes
 
@@ -76,10 +78,6 @@ To make the final invoice, hand off to `sap-b1-invoices` and copy from the deliv
 
 ## Notes
 
-- **File in the conversation?** If the user attached a customer PO, email, or PDF, ask with
-  `AskUserQuestion` whether it should be attached to the document **before** creating it —
-  alongside the confirmation, not after. See the attachment section in
-  `sap-b1-overview/reference.md`.
 - Reading status only? Use `sap-b1-lookups` — no writes.
 - `DocDueDate` on an order is the delivery/valid-until date; use the user's date or a sensible
   default and say which.

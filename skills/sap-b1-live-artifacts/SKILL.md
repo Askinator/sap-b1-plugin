@@ -10,6 +10,10 @@ Build a persisted, refreshable dashboard page backed by live SAP Business One da
 them — it's for when the value comes from turning a read into something the user reopens later,
 or from joining data that SAP keeps on separate screens.
 
+**Read `sap-b1-overview` before your first tool call** — it carries the discovery-first rule and
+the tool-availability fallbacks that apply here. Its rendering policy governs *chat* output; the
+artifact itself is built to this skill's own guidance below.
+
 ## Is an artifact actually the right tool here?
 
 SAP B1's native client shows one entity per screen — a customer's balance, their open orders,

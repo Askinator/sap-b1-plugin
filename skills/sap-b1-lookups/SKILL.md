@@ -9,9 +9,8 @@ Answer "where do things stand" questions with **read-only** queries — no draft
 creating or changing documents, use the relevant task skill (`sap-b1-invoices`,
 `sap-b1-journal-entries`, `sap-b1-service-calls`) instead.
 
-Per `sap-b1-overview` → Rendering output, render a single balance, aging summary, or document
-status as a data-record card — every time, not conditionally; keep multi-invoice lists as markdown
-tables.
+**Read `sap-b1-overview` before your first tool call** — it carries the output-rendering policy and
+the tool-availability fallbacks that apply here.
 
 ## Decide the shape
 

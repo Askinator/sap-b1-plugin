@@ -6,11 +6,12 @@ description: "Create credit memos in SAP Business One via the Service Layer MCP 
 # SAP B1 — credit memos and reversals
 
 Issue **AR credit memos** (`CreditNotes`) to customers and **AP credit memos**
-(`PurchaseCreditNotes`) from vendors, and correct posted documents. Follow the discovery-first
-rule: resolve the partner, items, G/L accounts, and VAT/tax codes **live** (see `sap-b1-overview`).
+(`PurchaseCreditNotes`) from vendors, and correct posted documents. **Read `sap-b1-overview` before
+your first tool call** — it carries the output-rendering policy and the tool-availability fallbacks
+that apply here.
 
-Per `sap-b1-overview` → Rendering output, render the draft receipt shown for pre-posting
-confirmation as a data-record card — every time, not conditionally.
+Follow the discovery-first rule: resolve the partner, items, G/L accounts, and VAT/tax codes
+**live** for the connected DB.
 
 ## In SAP B1 you reverse by crediting, not deleting
 
@@ -40,8 +41,10 @@ outright. Never attempt a raw `DELETE` on a posted document.
    see the copy-from-base recipe in `sap-b1-overview/reference.md`. Credit only the lines/quantities
    being returned; partial credits are normal.
 4. **Show a receipt and confirm**, then post with `sap_b1_sl_write` (`POST CreditNotes` /
-   `POST PurchaseCreditNotes`). Use `sap_b1_create_draft` first only if the user wants a reviewable
-   SAP draft — then finalize per the draft-first rule in `sap-b1-overview/reference.md`.
+   `POST PurchaseCreditNotes`). If a file is in the conversation, settle attachment intent in this
+   same turn — see the attachment section in `sap-b1-overview/reference.md`. Use
+   `sap_b1_create_draft` first only if the user wants a reviewable SAP draft — then finalize per
+   the draft-first rule in `sap-b1-overview/reference.md`.
 
 ## Payload shape (AR credit memo, copied from an invoice)
 
@@ -51,7 +54,7 @@ sap_b1_sl_write
   path: "CreditNotes"
   body: {
     "CardCode": "<resolved>",
-    "DocDate": "2026-07-08",
+    "DocDate": "<today, YYYY-MM-DD>",
     "DocumentLines": [
       { "BaseType": 13, "BaseEntry": <invoice DocEntry>, "BaseLine": 0, "Quantity": 1 }
     ]
@@ -64,10 +67,6 @@ Standalone service line: header `DocType: "dDocument_Service"`, line
 
 ## Notes
 
-- **File in the conversation?** If the user attached a PDF, receipt, or email, ask with
-  `AskUserQuestion` whether it should be attached to the credit memo **before** posting — fold it
-  into the confirmation step, not into a follow-up after the document exists. See the attachment
-  section in `sap-b1-overview/reference.md`.
 - Copying from the invoice is safest — it reverses the exact tax and inventory postings. Prefer it
   over hand-built lines whenever a source invoice exists.
 - Dates are `YYYY-MM-DD`. Omit `VatGroup` by default — SAP derives it via tax determination

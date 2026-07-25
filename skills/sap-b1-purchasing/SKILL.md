@@ -5,11 +5,11 @@ description: "Drive the SAP Business One purchasing lifecycle via the Service La
 
 # SAP B1 — purchasing (PO → goods receipt → AP invoice)
 
-Create and advance purchasing documents. Follow the discovery-first rule: resolve the vendor,
-items, and VAT/tax codes **live** for the connected DB (see `sap-b1-overview`).
+Create and advance purchasing documents. **Read `sap-b1-overview` before your first tool call** —
+it carries the output-rendering policy and the tool-availability fallbacks that apply here.
 
-Per `sap-b1-overview` → Rendering output, render the document-chain status
-(PO → goods receipt → AP invoice) as a data-record card — every time, not conditionally.
+Follow the discovery-first rule: resolve the vendor, items, and VAT/tax codes **live** for the
+connected DB.
 
 ## The flow
 
@@ -38,9 +38,11 @@ and keeps the base document's status in sync. You can skip stages (e.g. PO strai
 4. **Book the AP invoice** by copying from the goods receipt (`BaseType: 20`) or the PO
    (`BaseType: 22`) — hand off to `sap-b1-invoices`, and set `NumAtCard` to the vendor's invoice
    number.
-5. **Show a receipt and confirm** before posting each document with `sap_b1_sl_write`. Use
-   `sap_b1_create_draft` first only when the user wants a reviewable SAP draft; finalize per the
-   draft-first rule in `reference.md`.
+5. **Show a receipt and confirm** before posting each document with `sap_b1_sl_write`. Vendor
+   confirmations and invoices often arrive as a PDF or email — if one is in the conversation,
+   settle attachment intent in this same turn (see the attachment section in
+   `sap-b1-overview/reference.md`). Use `sap_b1_create_draft` first only when the user wants a
+   reviewable SAP draft; finalize per the draft-first rule in `reference.md`.
 
 ## Payload shapes
 
@@ -74,9 +76,6 @@ sap_b1_sl_write
 
 ## Notes
 
-- **File in the conversation?** Vendor confirmations and invoices often arrive as a PDF or email —
-  ask with `AskUserQuestion` whether to attach it to the document **before** posting, alongside the
-  confirmation, not after. See the attachment section in `sap-b1-overview/reference.md`.
 - On a PO, `DocDueDate` is the required-by/delivery date. Use the user's date or a sensible default
   and say which.
 - Dates are `YYYY-MM-DD`. Resolve items and accounts live — never reuse codes from another
