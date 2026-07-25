@@ -57,6 +57,13 @@ collection. Two shapes:
   must be in service mode (`DocType: "dDocument_Service"`). Resolve `AccountCode` live from
   `ChartOfAccounts`.
 
+**Reading a document: check `DocType` before judging the lines.** On a service document every line
+has `ItemCode: null` and `Quantity: 0` **by design** — the amount lives in `LineTotal` and the G/L
+in `AccountCode`. That is not a truncated response or a failed read, so don't re-query with
+different field selections trying to "fix" it. Read the header `DocType` first
+(`dDocument_Items` / `dDocument_Service`; `I` / `S` in the SQL tables) and interpret the lines
+accordingly.
+
 Tax per line uses a VAT-group field — on standard Service Layer marketing documents this is
 `VatGroup` (some localizations expose `TaxCode` instead).
 
