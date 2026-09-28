@@ -16,10 +16,8 @@
 #   3. Both manifests validate (skipped if the CLI is absent). `validate .`
 #      resolves to marketplace.json only, so the plugin manifest is validated
 #      by explicit path — otherwise plugin.json is never checked at all.
-#      The plugin manifest runs non-strict: --strict fails it on the "CLAUDE.md
-#      at the plugin root is not loaded as project context" warning, which is
-#      expected here (CLAUDE.md is guidance for working ON the plugin, not
-#      shipped context). Warnings are printed either way.
+#      Both run --strict. Keep CLAUDE.md in .claude/, not the repo root: a
+#      root CLAUDE.md triggers a warning that fails --strict.
 #
 # Exits non-zero on any failure so CI / a pre-commit hook can block the drift.
 
@@ -56,9 +54,8 @@ echo "Manifest validation:"
 if command -v claude >/dev/null 2>&1; then
   if claude plugin validate . --strict; then ok "marketplace.json --strict passed"
   else err "marketplace.json --strict failed"; fi
-  # Non-strict: see the header note on the expected CLAUDE.md warning.
-  if claude plugin validate .claude-plugin/plugin.json; then ok "plugin.json passed"
-  else err "plugin.json failed"; fi
+  if claude plugin validate .claude-plugin/plugin.json --strict; then ok "plugin.json --strict passed"
+  else err "plugin.json --strict failed"; fi
 else
   echo "  – claude CLI not on PATH; skipping (run 'scripts/check.sh' locally)"
 fi

@@ -6,7 +6,9 @@ Thumbs.db
 .vscode/
 
 # Local Claude / plugin state
-.claude/
+/.claude/*
+# ...except the contributor guidance Claude Code loads when working in this repo
+!/.claude/CLAUDE.md
 /.vs
 # Ignore local .github state but keep CI workflows tracked
 /.github/*

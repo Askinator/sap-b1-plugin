@@ -167,8 +167,11 @@ don't re-ask.
 Two-step, because the MCP host usually can't see Claude's upload sandbox:
 
 1. `sap_b1_prepare_upload` (no args) → returns `{ token, uploadUrl }`.
-2. Upload the local file with curl:
-   `curl -s -X POST "<uploadUrl>" -H "x-upload-token: <token>" -F "file=@<path>;type=<mime>" -F "entity=<EntitySet>" -F "key=<keyValue>"`.
+2. Upload the local file as an HTTP `POST` to `uploadUrl` with `multipart/form-data`:
+   - header `x-upload-token: <token>`
+   - form field `file` — the local file, with its MIME type
+   - form field `entity` — the target entity set (e.g. `PurchaseInvoices`)
+   - form field `key` — the target record's key value
 3. If the response has `"attached": false`, link it manually:
    `sap_b1_sl_write method="PATCH" path="<EntitySet>(<key>)" body={ "AttachmentEntry": <n> }`.
 
