@@ -8,7 +8,7 @@
     {
       "name": "sap-b1",
       "source": "./",
-      "description": "Hosted SAP B1 Service Layer connection plus workflow skills for the sales/purchasing lifecycles, invoices, credit memos, payments, journal entries, service calls, master data, lookups, internal messages, and live Cowork dashboards."
+      "description": "Workflow skills for a hosted SAP B1 Service Layer MCP server (added as a custom connector) for the sales/purchasing lifecycles, invoices, credit memos, payments, journal entries, service calls, master data, lookups, internal messages, and live Cowork dashboards."
     }
   ]
 }

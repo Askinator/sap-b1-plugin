@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-See [AGENTS.md](AGENTS.md) for the full guidance. In short:
+See [AGENTS.md](../AGENTS.md) for the full guidance. In short:
 
 - This is a **Claude Code plugin** (config + markdown skills), **not** an application — no build,
   test, lint, or runtime. The SAP B1 MCP **server is a separate, hosted project not in this repo**.
@@ -15,5 +15,9 @@ See [AGENTS.md](AGENTS.md) for the full guidance. In short:
   users target.
 - Skill **triggering keys off the `description` frontmatter**; Danish support lives as Danish
   trigger terms in those descriptions, not as translated skill files.
+- This file lives in `.claude/`, not the repo root: the repo root *is* the plugin root, and the
+  directory submission flags a root `CLAUDE.md` (it isn't loaded for plugin users anyway).
+- Skills must not contain literal download/upload shell commands (e.g. `curl ...`) — the directory
+  scanner flags them as download-and-run. Describe HTTP requests in prose instead.
 - Validate with `claude plugin validate . --strict`; ship updates by bumping `version` in
   `.claude-plugin/plugin.json`.

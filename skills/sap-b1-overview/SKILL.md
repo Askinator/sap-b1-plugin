@@ -48,7 +48,7 @@ against the same company DB:
 | Generic OData read of any entity set | `sap_b1_sl_query` |
 | Create / update / delete via Service Layer | `sap_b1_sl_write` (POST / PATCH / DELETE) |
 | Create a draft document | `sap_b1_create_draft` (needs `DocObjectCode`) |
-| Get an upload token for a chat file | `sap_b1_prepare_upload` (then curl upload) |
+| Get an upload token for a chat file | `sap_b1_prepare_upload` (then multipart POST upload — see reference.md) |
 | Attach a host/Base64 file to a record | `sap_b1_attach_file` |
 | Raw read-only SQL (when enabled) | `sap_b1_sql_query` |
 | Look up SAP table/field docs | `sap_b1_sql_reference` |

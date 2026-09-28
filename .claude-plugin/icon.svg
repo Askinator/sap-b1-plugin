@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="56" fill="#0B5CAB"/>
+  <!-- ledger page -->
+  <rect x="64" y="52" width="128" height="152" rx="12" fill="#FFFFFF"/>
+  <rect x="84" y="80" width="88" height="10" rx="5" fill="#0B5CAB"/>
+  <rect x="84" y="104" width="60" height="8" rx="4" fill="#9DB9D8"/>
+  <rect x="152" y="104" width="20" height="8" rx="4" fill="#9DB9D8"/>
+  <rect x="84" y="124" width="60" height="8" rx="4" fill="#9DB9D8"/>
+  <rect x="152" y="124" width="20" height="8" rx="4" fill="#9DB9D8"/>
+  <rect x="84" y="144" width="60" height="8" rx="4" fill="#9DB9D8"/>
+  <rect x="152" y="144" width="20" height="8" rx="4" fill="#9DB9D8"/>
+  <rect x="84" y="168" width="88" height="4" rx="2" fill="#0B5CAB"/>
+  <rect x="136" y="180" width="36" height="10" rx="5" fill="#F0AB00"/>
+</svg>
