@@ -52,3 +52,9 @@ each company enters its own URL here.
 
 The client handles remote-server auth via its normal OAuth flow, so your existing Cloudflare Access
 / OAuth setup is unchanged. Authenticate the connector when it prompts.
+
+## License, privacy, and terms
+
+MIT licensed — see [LICENSE](LICENSE). The plugin collects no data; see [PRIVACY.md](PRIVACY.md)
+and [TERMS.md](TERMS.md). Questions and bug reports:
+[GitHub Issues](https://github.com/Askinator/sap-b1-plugin/issues).
