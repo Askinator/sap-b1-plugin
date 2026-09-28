@@ -13,7 +13,11 @@
 #   2. Every skills/*/ dir is referenced in README.md and AGENTS.md, and every
 #      task skill (all but sap-b1-getting-started / sap-b1-overview) is listed
 #      in the overview skill index (skills/sap-b1-overview/SKILL.md).
-#   3. `claude plugin validate . --strict` passes (skipped if the CLI is absent).
+#   3. Both manifests validate (skipped if the CLI is absent). `validate .`
+#      resolves to marketplace.json only, so the plugin manifest is validated
+#      by explicit path — otherwise plugin.json is never checked at all.
+#      Both run --strict. Keep CLAUDE.md in .claude/, not the repo root: a
+#      root CLAUDE.md triggers a warning that fails --strict.
 #
 # Exits non-zero on any failure so CI / a pre-commit hook can block the drift.
 
@@ -48,10 +52,12 @@ done
 # --- 3. manifest validation (best effort) ------------------------------------
 echo "Manifest validation:"
 if command -v claude >/dev/null 2>&1; then
-  if claude plugin validate . --strict; then ok "claude plugin validate --strict passed"
-  else err "claude plugin validate --strict failed"; fi
+  if claude plugin validate . --strict; then ok "marketplace.json --strict passed"
+  else err "marketplace.json --strict failed"; fi
+  if claude plugin validate .claude-plugin/plugin.json --strict; then ok "plugin.json --strict passed"
+  else err "plugin.json --strict failed"; fi
 else
-  echo "  – claude CLI not on PATH; skipping (run 'claude plugin validate . --strict' locally)"
+  echo "  – claude CLI not on PATH; skipping (run 'scripts/check.sh' locally)"
 fi
 
 echo

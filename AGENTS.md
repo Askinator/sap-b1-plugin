@@ -4,8 +4,9 @@ Guidance for AI agents (and humans) working in this repository.
 
 ## What this repo is — and is not
 
-This is a **Claude Code / Claude Desktop plugin**, not an application. There is **no build, test,
-lint, or runtime step**. The deliverable is:
+This is a **Claude plugin** shipped to **Claude Desktop**, not an application. (It is developed and
+tested here with the Claude Code CLI — that's the toolchain, not the target.) There is **no build,
+test, lint, or runtime step**. The deliverable is:
 
 - `.claude-plugin/plugin.json` — the plugin manifest (name, version). **Skills only — no bundled
   MCP server.**
@@ -13,9 +14,9 @@ lint, or runtime step**. The deliverable is:
 - `skills/` — markdown skills that teach Claude the SAP B1 workflows.
 
 The connection is **not** bundled: each company adds its hosted server as a custom connector (see
-"Multi-tenant model"). Users target Claude Desktop / claude.ai, where plugin `userConfig`
-substitution does not run — so a bundled `.mcp.json` with `${user_config.mcp_url}` would only
-produce a broken, locked connector dialog. Don't reintroduce one.
+"Multi-tenant model"). Users target Claude Desktop, where plugin `userConfig` substitution does not
+run — so a bundled `.mcp.json` with `${user_config.mcp_url}` would only produce a broken, locked
+connector dialog. Don't reintroduce one.
 
 The SAP B1 **MCP server itself is a separate, hosted project and is NOT in this repo.** Do not look
 for server code, request handlers, or `sap_b1_*` tool implementations here — they don't exist in
@@ -35,18 +36,35 @@ not baked in. `skills/sap-b1-overview/reference.md` is the deliberate exception 
 **tenant-invariant** knowledge (entity-set names, `DocObjectCode`s, line-type shapes, lookup
 recipes). Company-specific numbers must never enter it.
 
-The efficiency corollary (added in 0.6.0): discovery-first means *never guess*, not *re-discover
-every task*. Skills phrase `describe`/resolve steps as **conditional and session-aware** ("only if
+The efficiency corollary: discovery-first means *never guess*, not *re-discover every task*. Skills phrase `describe`/resolve steps as **conditional and session-aware** ("only if
 unsure, skip if already described this session"), batch independent lookups into one round trip,
 and let SAP's own defaulting work (e.g. omit `VatGroup` and let tax determination derive it — see
 the VAT note in `reference.md`). When adding a skill, don't reintroduce unconditional per-task
 describe steps or mark SAP-derivable fields as always-required.
 
+## This repo is public — keep tenant data out of it
+
+Everything here is world-readable: the skills, the commit history, issue and PR bodies, and any
+transcript pasted into them. Debugging usually happens against a **live company database**, so it
+is easy to carry a real value out of a session and into a public artifact without noticing.
+
+Nothing tenant-identifying goes in. That means no company or customer names, no `CardCode`s,
+contact names, addresses, or emails, no G/L account numbers, tax codes, or item codes, no server
+URLs or connector endpoints, and no credentials. Document numbers, dates, and amounts from a real
+session are best avoided too — even on a demo DB they read as production data to anyone outside
+the project.
+
+Illustrate with invented values instead: `C50000`-style placeholders, `<resolved>`, or numbers
+chosen to be obviously fictional. When a real session prompted a change, describe the **behaviour**
+it exposed and leave the identifiers out — the finding is what matters, not the record it came
+from. This applies as much to a PR body or commit message as to a skill file; the git history is
+the part that can't be quietly edited later.
+
 ## Multi-tenant model
 
 One hosted server runs **per company database** (one URL each). This single plugin serves all of
 them: it ships skills only, and each company adds its server URL as a **custom connector** (Claude
-Desktop / claude.ai: Settings → Connectors → Add custom connector). Keeping the connection out of
+Desktop: Settings → Connectors → Add custom connector). Keeping the connection out of
 the plugin is why skills are company-agnostic — the same skill text works against any tenant because
 all specifics are resolved live and the URL is never baked in.
 
@@ -64,8 +82,8 @@ all specifics are resolved live and the URL is never baked in.
   `sap-b1-credit-memos`, `sap-b1-payments`, `sap-b1-sales-process`, `sap-b1-purchasing`,
   `sap-b1-journal-entries`, `sap-b1-service-calls`, `sap-b1-master-data`, `sap-b1-messages`
   (internal SAP B1 messages/alerts), `sap-b1-live-artifacts` (refreshable Cowork dashboards).
-  Each is self-contained
-  but defers cross-cutting facts to the overview/reference rather than duplicating them. The
+  Each is self-contained but defers cross-cutting facts to the overview/reference rather than
+  duplicating them. The
   lifecycle skills (sales, purchasing) and credit memos share the single copy-from-base recipe in
   `reference.md` instead of each re-explaining `BaseType`/`BaseEntry`/`BaseLine`.
 
@@ -112,23 +130,16 @@ claude plugin validate . --strict
 # Install locally for testing (in a Claude Code session)
 /plugin marketplace add <this-repo-path-or-url>
 /plugin install sap-b1@sap-b1-plugins
-
-# Ship an update: bump "version" in .claude-plugin/plugin.json, commit, push.
-# Users pull it with:
-/plugin marketplace update
 ```
 
-Note: the `claude` CLI must be on PATH for `plugin validate`; it is not available inside this repo's
-Bash tool environment, so validation typically runs in an interactive Claude Code terminal.
+**Shipping:** bump `version` in `.claude-plugin/plugin.json`, commit, push. The bump is what makes
+an installed copy re-sync — pushing skill edits without it can leave users on the previous version.
+Installed plugins are materialized copies, not symlinks to this repo, so editing the working tree
+never affects a running session; reinstall to test a change end to end.
 
 ## Planned work
 
-The first wave of planned skills has shipped: payments (`sap-b1-payments`), credit memos and
-reversals (`sap-b1-credit-memos`), the purchasing lifecycle (`sap-b1-purchasing`), the sales
-lifecycle (`sap-b1-sales-process`), and master-data creation (`sap-b1-master-data`). The shared
-"copy from base document" recipe now lives in `reference.md` and is reused by all of them.
-
-Still open (tracked as GitHub issues on
+Open work (tracked as GitHub issues on
 [Askinator/sap-b1-plugin](https://github.com/Askinator/sap-b1-plugin/issues)): deeper reconciliation
 (bank statement matching), returns/RMA flows, and a dedicated attachments skill once the
 `prepare_upload`/`attach_file` flow has been exercised against a live tenant. When adding one, keep

@@ -9,8 +9,8 @@ Post to `JournalEntries` when there is **no vendor relationship and no item flow
 paid by card, a correction, or a reclassification. For a bill from a vendor, use
 `sap-b1-invoices` (AP invoice) instead.
 
-Per `sap-b1-overview` → Rendering output, render the draft receipt shown for pre-posting
-confirmation as a data-record card — every time, not conditionally.
+**Read `sap-b1-overview` before your first tool call** — it carries the output-rendering policy and
+the tool-availability fallbacks that apply here.
 
 ## Hard rules
 
@@ -27,7 +27,9 @@ confirmation as a data-record card — every time, not conditionally.
 2. **Confirm line fields for this DB — only if unsure** (and not already described this session):
    `sap_b1_discover action="describe" name="JournalEntries"`, and describe the line type (search
    for `JournalEntryLines`). The payload shape below is standard — trust it until a call fails.
-3. **Show a receipt and confirm.** Present the lines and the debit/credit totals in chat. If the
+3. **Show a receipt and confirm.** Present the lines and the debit/credit totals. Receipts and
+   bilag usually arrive as a PDF or image — if a file is in the conversation, settle attachment
+   intent in this same turn (see the attachment section in `sap-b1-overview/reference.md`). If the
    user wants a reviewable SAP draft, create one with `sap_b1_create_draft`
    (`DocObjectCode: "oJournalEntries"`) and capture its `DraftEntry`.
 4. **Post after confirmation** with `sap_b1_sl_write method="POST" path="JournalEntries"`. If you
@@ -39,9 +41,9 @@ confirmation as a data-record card — every time, not conditionally.
 ```
 sap_b1_create_draft
   DocObjectCode: "oJournalEntries"
-  ReferenceDate: "2026-07-01"
-  DueDate: "2026-07-01"
-  TaxDate: "2026-07-01"
+  ReferenceDate: "<today, YYYY-MM-DD>"
+  DueDate: "<today, YYYY-MM-DD>"
+  TaxDate: "<today, YYYY-MM-DD>"
   Memo: "<short description>"
   JournalEntryLines: [
     { "AccountCode": "<expense G/L, resolved>", "Debit": 500.00, "LineMemo": "…" },
@@ -54,10 +56,6 @@ To post the real entry (after confirmation), send the same `JournalEntryLines`/h
 
 ## Notes
 
-- **File in the conversation?** Receipts and bilag usually arrive as a PDF or image — ask with
-  `AskUserQuestion` whether to attach it to the journal entry **before** posting, alongside the
-  confirmation, not after the entry exists. See the attachment section in
-  `sap-b1-overview/reference.md`.
 - Include VAT only when the user provides it and you can resolve the tax account/code live;
   otherwise post net and say so.
 - Dates are `YYYY-MM-DD`.

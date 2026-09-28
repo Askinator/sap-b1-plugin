@@ -5,12 +5,12 @@ description: "Create AR invoices (Invoices) and AP invoices (PurchaseInvoices) i
 
 # SAP B1 — invoices
 
-Create AR invoices (`Invoices`) and AP invoices (`PurchaseInvoices`). Follow the discovery-first
-rule: resolve the business partner, items, G/L accounts, and VAT/tax codes **live** for the
-connected DB (see `sap-b1-overview`). Never reuse codes from another company.
+Create AR invoices (`Invoices`) and AP invoices (`PurchaseInvoices`). **Read `sap-b1-overview`
+before your first tool call** — it carries the output-rendering policy and the tool-availability
+fallbacks that apply here.
 
-Per `sap-b1-overview` → Rendering output, render the draft receipt shown for pre-posting
-confirmation as a data-record card — every time, not conditionally.
+Follow the discovery-first rule: resolve the business partner, items, G/L accounts, and VAT/tax
+codes **live** for the connected DB. Never reuse codes from another company.
 
 ## Decide the shape
 
@@ -33,9 +33,10 @@ confirmation as a data-record card — every time, not conditionally.
 3. **Confirm fields for this DB** — only if unsure of a field name and you haven't already
    described this entity in this session: `sap_b1_discover action="describe" name="Invoices"` (or
    `PurchaseInvoices`).
-4. **Show a receipt and confirm.** Summarize the partner, lines, totals, and tax in chat before
-   posting. If the user wants a reviewable SAP draft, create one with `sap_b1_create_draft` and
-   capture its `DraftEntry`.
+4. **Show a receipt and confirm.** Summarize the partner, lines, totals, and tax before posting.
+   If a file is in the conversation, settle attachment intent in this same turn — see the
+   attachment section in `sap-b1-overview/reference.md`. If the user wants a reviewable SAP draft,
+   create one with `sap_b1_create_draft` and capture its `DraftEntry`.
 5. **Finalize after confirmation.** Post the real invoice with `sap_b1_sl_write`
    (`POST Invoices` / `POST PurchaseInvoices`). If you created a draft, either have the user
    approve it in SAP **or** delete it after posting — see the draft-first finalize rule in
@@ -48,8 +49,8 @@ confirmation as a data-record card — every time, not conditionally.
 sap_b1_create_draft
   DocObjectCode: "oInvoices"
   CardCode: "<resolved>"
-  DocDate: "2026-07-01"
-  DocDueDate: "2026-07-15"
+  DocDate: "<today, YYYY-MM-DD>"
+  DocDueDate: "<per payment terms, YYYY-MM-DD>"
   DocumentLines: [
     { "ItemCode": "<resolved>", "Quantity": 2 }
   ]
@@ -61,7 +62,7 @@ sap_b1_create_draft
   DocObjectCode: "oInvoices"
   CardCode: "<resolved>"
   DocType: "dDocument_Service"
-  DocDate: "2026-07-01"
+  DocDate: "<today, YYYY-MM-DD>"
   DocumentLines: [
     { "AccountCode": "<resolved G/L>", "LineTotal": 1000.00, "VatGroup": "<resolved, if this DB has no service-line default>" }
   ]
@@ -73,15 +74,9 @@ field). For AP, use `path="PurchaseInvoices"`.
 
 ## Notes
 
-- **File in the conversation?** If the user attached a PDF, receipt, or email, ask with
-  `AskUserQuestion` whether it should be attached to the invoice **before** posting — fold it into
-  step 4's confirmation, not into a follow-up after the document exists. See the attachment section
-  in `sap-b1-overview/reference.md`.
 - Dates are `YYYY-MM-DD`. Use the user's date or today.
-- `VatGroup` is the standard Service Layer line VAT field; some localizations use `TaxCode`.
-  **Omit it by default** — SAP derives it via tax determination. Set it (resolved live) only when
-  the user needs a specific treatment or the post errors on a missing tax code — see the VAT note
-  in `sap-b1-overview/reference.md`.
+- Omit `VatGroup` — SAP derives it. The VAT note in `sap-b1-overview/reference.md` covers the
+  exceptions and the `TaxCode` localization.
 - **AP invoices:** set `NumAtCard` to the vendor's own invoice number when the user gives it —
   it's how AP invoices are matched and found later.
 - To bill from an existing sales order or delivery, copy from the base document instead of

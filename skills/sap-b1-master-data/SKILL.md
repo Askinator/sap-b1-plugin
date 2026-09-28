@@ -6,11 +6,11 @@ description: "Create and maintain SAP Business One master data via the Service L
 # SAP B1 — master data (business partners & items)
 
 Create and update the records that documents reference: `BusinessPartners` (customers/vendors) and
-`Items`. Follow the discovery-first rule — resolve groups, price lists, VAT groups, and any G/L
-determination **live** for the connected DB (see `sap-b1-overview`).
+`Items`. **Read `sap-b1-overview` before your first tool call** — it carries the output-rendering
+policy and the tool-availability fallbacks that apply here.
 
-Per `sap-b1-overview` → Rendering output, render the new customer/vendor/item confirmation as a
-data-record card before creating — every time, not conditionally.
+Follow the discovery-first rule: resolve groups, price lists, VAT groups, and any G/L determination
+**live** for the connected DB.
 
 ## Check it doesn't already exist first
 

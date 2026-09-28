@@ -5,11 +5,12 @@ description: "Create and manage Service Calls (ServiceCalls) in SAP Business One
 
 # SAP B1 — service calls
 
-Manage `ServiceCalls` (support tickets tied to a customer). Follow the discovery-first rule:
-resolve the customer, contact, and any referenced item/account **live** for the connected DB.
+Manage `ServiceCalls` (support tickets tied to a customer). **Read `sap-b1-overview` before your
+first tool call** — it carries the output-rendering policy and the tool-availability fallbacks that
+apply here.
 
-Per `sap-b1-overview` → Rendering output, render a single service call as a data-record card —
-every time, not conditionally.
+Follow the discovery-first rule: resolve the customer, contact, and any referenced item/account
+**live** for the connected DB.
 
 ## Support-to-invoice workflow
 
@@ -25,7 +26,10 @@ every time, not conditionally.
    `sap_b1_discover action="describe" name="ServiceCalls"` — field names for subject, status,
    origin, and problem type vary by configuration, so confirm before writing. Status/priority/type
    codes are configurable per DB; resolve valid values live rather than assuming numbers.
-3. **Create the call** with `sap_b1_sl_write method="POST" path="ServiceCalls"`.
+3. **Create the call** with `sap_b1_sl_write method="POST" path="ServiceCalls"`. Tickets often
+   start from a customer email, screenshot, or PDF — if one is in the conversation, settle
+   attachment intent before creating (see the attachment section in
+   `sap-b1-overview/reference.md`).
 4. **Update** an existing call with `sap_b1_sl_write method="PATCH" path="ServiceCalls(<id>)"`.
 5. **Read** calls with `sap_b1_sl_query entity="ServiceCalls"` (filter by `CustomerCode`, status,
    or date).
@@ -86,9 +90,6 @@ hand off to `sap-b1-invoices` — resolve the service item or G/L account and VA
 
 ## Notes
 
-- **File in the conversation?** Tickets often start from a customer email, screenshot, or PDF —
-  ask with `AskUserQuestion` whether to attach it to the service call **before** creating it, not
-  after. See the attachment section in `sap-b1-overview/reference.md`.
 - Show the created call's key (`ServiceCallID`) back to the user.
 - If write tools are not exposed, you can still read calls with `sap_b1_sl_query`; explain that
   creating/updating needs a write-capable capability set.
