@@ -17,7 +17,9 @@
 #      resolves to marketplace.json only, so the plugin manifest is validated
 #      by explicit path — otherwise plugin.json is never checked at all.
 #      Both run --strict. Keep CLAUDE.md in .claude/, not the repo root: a
-#      root CLAUDE.md triggers a warning that fails --strict.
+#      root CLAUDE.md triggers a warning that fails --strict. The one tolerated
+#      warning is "Unknown field 'icon'": the plugin directory wants an icon in
+#      plugin.json, but the CLI schema doesn't know the field yet.
 #
 # Exits non-zero on any failure so CI / a pre-commit hook can block the drift.
 
@@ -51,11 +53,23 @@ done
 
 # --- 3. manifest validation (best effort) ------------------------------------
 echo "Manifest validation:"
+# Passes if --strict passes, or if every warning it raised is the known icon one.
+validate() {
+  local target=$1 label=$2 out
+  if out=$(claude plugin validate "$target" --strict 2>&1); then
+    ok "$label --strict passed"; return
+  fi
+  if printf '%s\n' "$out" | grep -q '❯' \
+     && ! printf '%s\n' "$out" | grep '❯' | grep -vq "Unknown field 'icon'" \
+     && ! printf '%s\n' "$out" | grep -Eq 'Found [0-9]+ errors?'; then
+    ok "$label --strict passed (ignoring known 'icon' warning)"
+  else
+    printf '%s\n' "$out"; err "$label --strict failed"
+  fi
+}
 if command -v claude >/dev/null 2>&1; then
-  if claude plugin validate . --strict; then ok "marketplace.json --strict passed"
-  else err "marketplace.json --strict failed"; fi
-  if claude plugin validate .claude-plugin/plugin.json --strict; then ok "plugin.json --strict passed"
-  else err "plugin.json --strict failed"; fi
+  validate . marketplace.json
+  validate .claude-plugin/plugin.json plugin.json
 else
   echo "  – claude CLI not on PATH; skipping (run 'scripts/check.sh' locally)"
 fi
