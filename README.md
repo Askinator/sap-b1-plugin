@@ -1,54 +1,81 @@
 # SAP Business One plugin for Claude
 
-A plugin of **skills** that teach Claude how to work with your hosted SAP Business One MCP server.
-Install it in Claude Desktop, add your company's server as a custom connector, and Claude gets both
-the `sap_b1_*` tools and the SAP B1 workflow know-how.
+Skills that teach Claude how to work in **SAP Business One** — look up balances and order status,
+create invoices, credit memos, payments, and journal entries, run the sales and purchasing
+lifecycles, log service calls, and maintain business partners and items.
 
-The MCP **server** is a separate project and stays hosted as-is (HTTP + OAuth / Cloudflare
-Access). This repo contains only the skills — the connection is added per company as a custom
-connector (see [Install](#install)), because each company database has its own server URL.
+The plugin contains **skills only**. The actual connection to SAP B1 comes from an MCP server that
+talks to your company's Service Layer; you add that server to Claude yourself as a custom connector.
+**The server is not part of this repository**, so the plugin does nothing on its own — see
+[Requirements](#requirements).
+
+## Requirements
+
+- **Claude Desktop** (the skills also use Cowork for dashboards and scheduled tasks).
+- **SAP Business One** with the **Service Layer** enabled.
+- An **MCP server** reachable over HTTPS that exposes the `sap_b1_*` tools these skills call:
+  `sap_b1_discover`, `sap_b1_get_document`, `sap_b1_sl_query`, `sap_b1_sl_write`,
+  `sap_b1_create_draft`, `sap_b1_prepare_upload`, `sap_b1_attach_file`, and optionally
+  `sap_b1_sql_query` / `sap_b1_sql_reference`. A server may expose fewer tools (for example read-only); the skills
+  detect what is available and fall back or tell you what is missing.
+
+## Install
+
+**1. Install the plugin**
+
+In **Claude Desktop**, add this repository as a plugin marketplace using its GitHub URL,
+`https://github.com/Askinator/sap-b1-plugin`, then install the `sap-b1` plugin.
+
+**2. Connect your company's server**
+
+In **Claude Desktop**, go to **Settings → Connectors → Add custom connector**, give it a name
+(e.g. `sap-b1`), and paste your server's MCP endpoint. Sign in when the connector prompts —
+authentication is whatever your server uses (typically OAuth), handled by Claude's normal connector
+flow.
+
+Then ask Claude *"how do I get started with SAP B1?"* — the `sap-b1-getting-started` skill checks the
+connection and walks you through the rest.
+
+## How it works
+
+- **Discovery-first.** Every company database has its own chart of accounts, VAT groups, items, and
+  payment accounts. The skills never hardcode these — they look them up live in the connected
+  database before using them.
+- **Confirm before posting.** For invoices, credit memos, payments, and journal entries, Claude
+  shows a summary of the document (partner, lines, totals, tax) and posts only after you confirm.
+  It can also leave a draft in SAP for you to review there.
+- **English and Danish.** Skills trigger on Danish requests too (*faktura*, *kassekladde*,
+  *kreditnota*, …); Claude answers in the language you write in.
 
 ## Skills
 
-Auto-discovered and invoked by Claude on relevant tasks:
+Claude picks these up automatically for relevant requests:
 
 - `sap-b1-getting-started` — first-run onboarding: verify the connection, tour the skills, work in Cowork, set up a scheduled digest.
-- `sap-b1-overview` — orientation, tool map, and the **discovery-first rule** (+ `reference.md`).
+- `sap-b1-overview` — orientation, tool map, and the discovery-first rule (+ `reference.md`).
 - `sap-b1-lookups` — read-only balances, aging, and order/quotation/PO status.
 - `sap-b1-invoices` — AR/AP invoices (item and service lines).
 - `sap-b1-credit-memos` — AR/AP credit memos and reversing posted documents.
 - `sap-b1-payments` — apply incoming/outgoing payments to open invoices.
 - `sap-b1-sales-process` — quotation → order → delivery → invoice (copy-from-base).
 - `sap-b1-purchasing` — purchase order → goods receipt → AP invoice (copy-from-base).
-- `sap-b1-journal-entries` — manual GL postings, debits = credits.
+- `sap-b1-journal-entries` — manual G/L postings, debits = credits.
 - `sap-b1-service-calls` — support tickets and activity logging.
 - `sap-b1-master-data` — create/maintain business partners and items.
 - `sap-b1-messages` — send internal SAP B1 messages/alerts to users, named recipients, or a department.
 - `sap-b1-live-artifacts` — build a persisted, refreshable Cowork dashboard backed by live SAP B1 data.
 
-## Multi-tenant model
+## Use with care
 
-You run **one hosted server per company database** (one URL each). This single plugin serves all of
-them: the skills are company-agnostic and the connection is added per company as a custom connector,
-so each user points at their own company's server. Chart-of-accounts, VAT groups, items, and
-payment accounts are **resolved live** per DB, never hardcoded.
+These skills can create and post real documents in your ERP. Try them against a **test or demo
+company database** first, read every summary before confirming it, and give the server's SAP user
+only the permissions you are comfortable with Claude using. The software is provided as-is, without
+warranty; you remain responsible for what gets posted.
 
-## Install
+## License and trademarks
 
-**1. Install the skills**
+Copyright © 2026 Aske Paustian. All rights reserved. You may install and use the plugin; copying,
+modifying, or redistributing it requires permission — see [LICENSE](LICENSE).
 
-In **Claude Desktop**, paste this repo's GitHub link — `https://github.com/Askinator/sap-b1-plugin`
-— to add it as a plugin marketplace, then install the `sap-b1` plugin. That's the whole skills
-install; no local checkout or config editing is needed.
-
-**2. Add your company's server as a custom connector**
-
-In **Claude Desktop**: **Settings → Connectors → Add custom connector** (or **Customize →
-Connectors**), name it (e.g. `sap-b1`), and paste your `https://…/mcp` endpoint. This is a separate
-step from installing the plugin — the plugin ships skills only and does not bundle a server, so
-each company enters its own URL here.
-
-## Authentication
-
-The client handles remote-server auth via its normal OAuth flow, so your existing Cloudflare Access
-/ OAuth setup is unchanged. Authenticate the connector when it prompts.
+This is an independent project, not affiliated with or endorsed by SAP SE. SAP and
+SAP Business One are trademarks or registered trademarks of SAP SE.
