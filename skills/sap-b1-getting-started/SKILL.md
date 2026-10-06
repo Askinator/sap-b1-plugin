@@ -63,6 +63,8 @@ needs the write tools enabled server-side.
 | Post a manual journal entry to the G/L | `sap-b1-journal-entries` |
 | Open or manage a support/service ticket | `sap-b1-service-calls` |
 | Create a new customer, vendor, or item | `sap-b1-master-data` |
+| Send an internal SAP message to a user or department | `sap-b1-messages` |
+| Build a refreshable dashboard over live SAP data (Cowork) | `sap-b1-live-artifacts` |
 
 Everything tenant-specific (accounts, VAT groups, item codes) is resolved **live** against the
 connected database — nothing is hardcoded, so the same skills work for any company.
@@ -101,15 +103,17 @@ zero risk. Offer the user a couple of concrete prompts to try, adapted to their 
 - "What's the status of order / quotation **&lt;number&gt;**?"
 - "List the open service calls for **&lt;customer&gt;**."
 
-Save writes for after the user is comfortable, and when you do write, follow the **draft-first**
-pattern: `sap_b1_create_draft` → show a compact receipt → post only after the user confirms.
+Save writes for after the user is comfortable. When you do write, show a compact confirmation
+receipt in chat and post only after the user confirms; leave a `sap_b1_create_draft` draft in SAP
+only if they want one to review there (see the draft-first rule in `sap-b1-overview/reference.md`).
 
 ## 6. When something goes wrong
 
-Set expectations about correcting mistakes so nobody panics:
+Tell the user how mistakes get corrected:
 
-- **Drafts are safe.** A draft (`sap_b1_create_draft`) posts nothing to the ledger — it can be edited
-  or deleted freely. Do all the shaping there.
+- **Nothing posts without a yes.** Every financial document is shown as a receipt first, and a SAP
+  draft (`sap_b1_create_draft`, when the user asks for one) posts nothing to the ledger — it can be
+  edited or deleted freely.
 - **Posted documents are not simply deleted.** In SAP B1 a posted invoice or journal entry is
   corrected by a **reversing document** (credit memo, reversing journal entry), not a delete. If the
   user wants to undo a posted document, route to the relevant task skill and resolve the reversal
@@ -128,7 +132,7 @@ skills and fixes arrive without reinstalling.
 - **Tool availability varies:** a restricted deployment may expose only reads, and SQL tools exist
   only when the server has a SQL dialect configured. Degrade gracefully and tell the user what to
   enable.
-- **Draft-first for anything financial:** confirm before posting to the ledger.
+- **Confirm before anything financial posts:** show the receipt, post only on the user's yes.
 - **This is real business data:** balances, partners, and postings come from a live company
   database. Share results only with the intended user, and don't export or send them anywhere the
   user hasn't asked for.

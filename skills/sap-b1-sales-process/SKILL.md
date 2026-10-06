@@ -1,6 +1,6 @@
 ---
 name: sap-b1-sales-process
-description: "Drive the SAP Business One sales lifecycle via the Service Layer MCP — sales quotations (Quotations), sales orders (Orders), deliveries (DeliveryNotes), and their conversion forward into the next document by copying from the base document. Use whenever the user wants to create a quotation, raise a sales order, ship a delivery, convert a quotation into an order or an order into a delivery/invoice, or check where an order sits in the flow. Also triggers on Danish requests: tilbud, opret tilbud, salgsordre, opret ordre, levering, følgeseddel, konverter tilbud til ordre, lav ordre til levering, salgsproces. Resolves the customer, items, and VAT group live for the connected company database."
+description: "Drives the SAP Business One sales lifecycle via the Service Layer MCP — sales quotations (Quotations), sales orders (Orders), deliveries (DeliveryNotes), and their conversion forward into the next document by copying from the base document. Use whenever the user wants to create a quotation, raise a sales order, ship a delivery, convert a quotation into an order or an order into a delivery/invoice, or check where an order sits in the flow. Also triggers on Danish requests: tilbud, opret tilbud, salgsordre, opret ordre, levering, følgeseddel, konverter tilbud til ordre, lav ordre til levering, salgsproces. Resolves the customer, items, and VAT group live for the connected company database."
 ---
 
 # SAP B1 — sales process (quotation → order → delivery → invoice)
@@ -52,8 +52,8 @@ sap_b1_sl_write
   path: "Orders"
   body: {
     "CardCode": "<resolved>",
-    "DocDate": "2026-07-08",
-    "DocDueDate": "2026-07-22",
+    "DocDate": "<today, YYYY-MM-DD>",
+    "DocDueDate": "<delivery date, YYYY-MM-DD>",
     "DocumentLines": [
       { "ItemCode": "<resolved>", "Quantity": 5 }
     ]

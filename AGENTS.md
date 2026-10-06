@@ -90,8 +90,9 @@ all specifics are resolved live and the URL is never baked in.
 Skills are auto-discovered and invoked based on their frontmatter **`description`** — that field is
 the trigger surface, so keep it dense with the phrasings a real user would type.
 
-**When you add or rename a skill, update all three hub docs that list the skill set:** the overview
-skill index (`skills/sap-b1-overview/SKILL.md`), the `README.md` skills list, and the task-skill list
+**When you add or rename a skill, update all four hub docs that list the skill set:** the overview
+skill index (`skills/sap-b1-overview/SKILL.md`), the getting-started tour table
+(`skills/sap-b1-getting-started/SKILL.md`), the `README.md` skills list, and the task-skill list
 above in this file. These drifted twice (PRs #8/#9 added skills without touching them). `scripts/check.sh`
 now enforces this — it fails if a `skills/*/` dir is missing from any hub, and CI runs it on every PR.
 Run it locally before opening a PR: `scripts/check.sh`.
@@ -103,9 +104,10 @@ Skills assume these `sap_b1_*` tools (implemented in the separate server): `disc
 `sql_query`, `sql_reference`. **Tool availability is gated per deployment by server capabilities** —
 a restricted server may expose only reads, and SQL tools exist only when a SQL dialect is
 configured. Skills must degrade gracefully (fall back to `sl_query`, read-only, and tell the user
-what to enable) rather than assume a tool is present. Financial actions follow a **draft-first**
-pattern: `create_draft` → show a compact receipt → post the real document only after user
-confirmation.
+what to enable) rather than assume a tool is present. Financial actions are **confirm-first**: show
+a compact receipt in chat → post the real document only after user confirmation. `create_draft` is
+for when the user wants a draft left in SAP to review, and that draft must then be finalized
+cleanly (the draft-first rule in `reference.md`).
 
 ## Localization decision (don't re-litigate)
 

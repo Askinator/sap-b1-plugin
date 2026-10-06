@@ -1,6 +1,6 @@
 ---
 name: sap-b1-purchasing
-description: "Drive the SAP Business One purchasing lifecycle via the Service Layer MCP — purchase orders (PurchaseOrders), goods receipt POs (PurchaseDeliveryNotes), and their conversion forward into an AP invoice by copying from the base document. Use whenever the user wants to raise a purchase order, order from a vendor, receive goods against a PO, book a goods receipt, or turn a PO/receipt into a vendor bill. Also triggers on Danish requests: indkøbsordre, købsordre, bestil hos leverandør, opret indkøbsordre, varemodtagelse, godsmodtagelse, modtag varer, indkøbsproces. Resolves the vendor, items, and VAT group live for the connected company database."
+description: "Drives the SAP Business One purchasing lifecycle via the Service Layer MCP — purchase orders (PurchaseOrders), goods receipt POs (PurchaseDeliveryNotes), and their conversion forward into an AP invoice by copying from the base document. Use whenever the user wants to raise a purchase order, order from a vendor, receive goods against a PO, book a goods receipt, or turn a PO/receipt into a vendor bill. Also triggers on Danish requests: indkøbsordre, købsordre, bestil hos leverandør, opret indkøbsordre, varemodtagelse, godsmodtagelse, modtag varer, indkøbsproces. Resolves the vendor, items, and VAT group live for the connected company database."
 ---
 
 # SAP B1 — purchasing (PO → goods receipt → AP invoice)
@@ -53,8 +53,8 @@ sap_b1_sl_write
   path: "PurchaseOrders"
   body: {
     "CardCode": "<resolved vendor>",
-    "DocDate": "2026-07-08",
-    "DocDueDate": "2026-07-22",
+    "DocDate": "<today, YYYY-MM-DD>",
+    "DocDueDate": "<required-by date, YYYY-MM-DD>",
     "DocumentLines": [
       { "ItemCode": "<resolved>", "Quantity": 10, "UnitPrice": 42.00 }
     ]

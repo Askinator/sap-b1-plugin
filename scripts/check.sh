@@ -12,7 +12,8 @@
 #      carries none, so there is nothing to cross-check).
 #   2. Every skills/*/ dir is referenced in README.md and AGENTS.md, and every
 #      task skill (all but sap-b1-getting-started / sap-b1-overview) is listed
-#      in the overview skill index (skills/sap-b1-overview/SKILL.md).
+#      in the overview skill index (skills/sap-b1-overview/SKILL.md) and the
+#      getting-started tour table (skills/sap-b1-getting-started/SKILL.md).
 #   3. Both manifests validate (skipped if the CLI is absent). `validate .`
 #      resolves to marketplace.json only, so the plugin manifest is validated
 #      by explicit path — otherwise plugin.json is never checked at all.
@@ -48,10 +49,12 @@ for dir in skills/*/; do
   case "$skill" in
     sap-b1-getting-started|sap-b1-overview) ;;  # not part of the task-skill index
     *) grep -q "$skill" skills/sap-b1-overview/SKILL.md \
-         || err "$skill not listed in overview skill index (skills/sap-b1-overview/SKILL.md)" ;;
+         || err "$skill not listed in overview skill index (skills/sap-b1-overview/SKILL.md)"
+       grep -q "$skill" skills/sap-b1-getting-started/SKILL.md \
+         || err "$skill not listed in getting-started tour (skills/sap-b1-getting-started/SKILL.md)" ;;
   esac
 done
-[ "$fail" -eq 0 ] && ok "all skills referenced in README, AGENTS, and the overview index"
+[ "$fail" -eq 0 ] && ok "all skills referenced in README, AGENTS, the overview index, and the getting-started tour"
 
 # --- 3. manifest validation (best effort) ------------------------------------
 echo "Manifest validation:"

@@ -16,7 +16,7 @@ payment accounts**. Never hardcode or guess an account number, tax code, item co
 account from memory or from another company. **Resolve them live** against the connected DB:
 
 - **Entities and fields** → `sap_b1_discover` (`action: "list_entity_sets" | "describe" | "search"`).
-  Describe an entity before querying or writing to it to confirm field names for *this* DB.
+  Describe an entity when you're unsure of a field name for *this* DB or a call failed on one.
 - **G/L accounts** → query the `ChartOfAccounts` entity via `sap_b1_sl_query`
   (filter on `Name`/`AcctName`), or `sap_b1_sql_query` against table `OACT` if SQL is enabled.
 - **VAT / tax groups** → query the tax-code entity (search discover for `Tax`/`Vat`), or table
@@ -69,9 +69,11 @@ is present — if a needed capability is missing, tell the user what to enable.
 
 ## Working style
 
-- Read before you write. Confirm the entity shape with `sap_b1_discover`, then act.
-- Prefer **drafts** for anything financial: create with `sap_b1_create_draft`, show the user the
-  compact receipt, and only add/post the real document after they confirm.
+- Read before you write: resolve every code the payload references, and describe the entity only
+  if a field name is uncertain (see above).
+- **Confirm before anything financial posts.** Show the user a compact confirmation receipt in chat
+  and post the real document only after they confirm. Use `sap_b1_create_draft` only when the user
+  wants a draft left in SAP for review — see the draft-first rule in `reference.md`.
 - **Settle attachment intent up front.** If a file is in the conversation (PDF, receipt, email,
   image) and you're about to create or find a record, ask with `AskUserQuestion` whether it should
   be attached **before** writing — not after the record exists. See the attachment section in
@@ -88,8 +90,8 @@ match the widget to the output:
 
 - Capability tour or list of options → card grid.
 - A single balance, aging summary, or document status → data-record card or metric cards.
-- A draft document awaiting confirmation (invoice, credit memo, payment, journal entry) →
-  data-record card styled as a receipt.
+- A document awaiting confirmation (invoice, credit memo, payment, journal entry) →
+  data-record card styled as a confirmation receipt.
 - Multi-row lists (open invoices, service call queue, PO lines) → keep as markdown tables, never
   widgets; the design system reserves tables for text.
 

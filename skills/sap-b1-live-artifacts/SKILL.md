@@ -1,6 +1,6 @@
 ---
 name: sap-b1-live-artifacts
-description: "Build a persisted, refreshable Cowork artifact (a live dashboard page) backed by live SAP Business One data via the Service Layer MCP, for views that don't exist as a single native SAP B1 screen — cross-entity joins (e.g. a customer health board combining AR aging, open service calls, and last order date), aggregate or trend visuals that SAP's grid-based reports don't show at a glance, or any report the user wants to check again later instead of re-asking in chat. Use whenever the user asks for a \"dashboard\", \"board\", \"tracker\", \"live view\", \"page I can check every morning\", says something \"isn't available in SAP\" and wants it visualized, or wants to turn a recurring report into something refreshable. Also triggers on Danish requests like \"et dashboard for mine sager\" or \"en oversigt jeg kan tjekke hver dag\". Requires the mcp__cowork__create_artifact tool. Not for one-off answers that belong in chat — those stay with sap-b1-lookups."
+description: "Builds a persisted, refreshable Cowork artifact (a live dashboard page) backed by live SAP Business One data via the Service Layer MCP, for views that don't exist as a single native SAP B1 screen — cross-entity joins (e.g. a customer health board combining AR aging, open service calls, and last order date), aggregate or trend visuals that SAP's grid-based reports don't show at a glance, or any report the user wants to check again later instead of re-asking in chat. Use whenever the user asks for a \"dashboard\", \"board\", \"tracker\", \"live view\", \"page I can check every morning\", says something \"isn't available in SAP\" and wants it visualized, or wants to turn a recurring report into something refreshable. Also triggers on Danish requests like \"et dashboard for mine sager\" or \"en oversigt jeg kan tjekke hver dag\". Requires the mcp__cowork__create_artifact tool. Not for one-off answers that belong in chat — those stay with sap-b1-lookups."
 ---
 
 # SAP B1 — live artifacts
@@ -125,8 +125,8 @@ and verified this session — nothing untested.
 
 Keep writes out of the artifact itself. An unattended dashboard that can silently post or modify
 SAP records is a bad pattern — if the view surfaces something actionable ("this invoice needs a
-reminder"), let the user come back to chat and act on it there with the normal draft-first flow
-from the other SAP B1 skills, rather than embedding a write button in the artifact.
+reminder"), let the user come back to chat and act on it there with the normal confirm-before-posting
+flow from the other SAP B1 skills, rather than embedding a write button in the artifact.
 
 ## Test before handing off
 

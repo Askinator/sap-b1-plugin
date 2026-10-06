@@ -1,6 +1,6 @@
 ---
 name: sap-b1-invoices
-description: "Create AR invoices (Invoices) and AP invoices (PurchaseInvoices) in SAP Business One via the Service Layer MCP — both item-type invoices bound to ItemCodes and service-type invoices posted to a G/L account. Use whenever the user wants to create, post, or draft an invoice, faktura, salgsfaktura, indkøbsfaktura, kreditorfaktura, or debitorfaktura, or bill a customer or record a bill from a vendor. Resolves the customer/vendor, item, G/L account, and VAT group live for the connected company database."
+description: "Creates AR invoices (Invoices) and AP invoices (PurchaseInvoices) in SAP Business One via the Service Layer MCP — both item-type invoices bound to ItemCodes and service-type invoices posted to a G/L account. Use whenever the user wants to create, post, or draft an invoice, faktura, salgsfaktura, indkøbsfaktura, kreditorfaktura, or debitorfaktura, or bill a customer or record a bill from a vendor. Resolves the customer/vendor, item, G/L account, and VAT group live for the connected company database."
 ---
 
 # SAP B1 — invoices
@@ -44,33 +44,38 @@ codes **live** for the connected DB. Never reuse codes from another company.
 
 ## Payload shapes
 
-**Item AR invoice (draft):**
+**Item AR invoice (after confirmation):**
 ```
-sap_b1_create_draft
-  DocObjectCode: "oInvoices"
-  CardCode: "<resolved>"
-  DocDate: "<today, YYYY-MM-DD>"
-  DocDueDate: "<per payment terms, YYYY-MM-DD>"
-  DocumentLines: [
-    { "ItemCode": "<resolved>", "Quantity": 2 }
-  ]
-```
-
-**Service AR invoice (draft):**
-```
-sap_b1_create_draft
-  DocObjectCode: "oInvoices"
-  CardCode: "<resolved>"
-  DocType: "dDocument_Service"
-  DocDate: "<today, YYYY-MM-DD>"
-  DocumentLines: [
-    { "AccountCode": "<resolved G/L>", "LineTotal": 1000.00, "VatGroup": "<resolved, if this DB has no service-line default>" }
-  ]
+sap_b1_sl_write
+  method: "POST"
+  path: "Invoices"
+  body: {
+    "CardCode": "<resolved>",
+    "DocDate": "<today, YYYY-MM-DD>",
+    "DocDueDate": "<per payment terms, YYYY-MM-DD>",
+    "DocumentLines": [
+      { "ItemCode": "<resolved>", "Quantity": 2 }
+    ]
+  }
 ```
 
-**Post the real document (after confirmation):** same body, but
-`sap_b1_sl_write method="POST" path="Invoices"` (omit `DocObjectCode`, which is a Drafts-only
-field). For AP, use `path="PurchaseInvoices"`.
+**Service AR invoice (after confirmation):**
+```
+sap_b1_sl_write
+  method: "POST"
+  path: "Invoices"
+  body: {
+    "CardCode": "<resolved>",
+    "DocType": "dDocument_Service",
+    "DocDate": "<today, YYYY-MM-DD>",
+    "DocumentLines": [
+      { "AccountCode": "<resolved G/L>", "LineTotal": 1000.00, "VatGroup": "<resolved, if this DB has no service-line default>" }
+    ]
+  }
+```
+
+For AP, use `path: "PurchaseInvoices"`. **SAP draft instead (only if the user wants one):** pass the
+same fields to `sap_b1_create_draft` plus `DocObjectCode: "oInvoices"` (or `"oPurchaseInvoices"`).
 
 ## Notes
 

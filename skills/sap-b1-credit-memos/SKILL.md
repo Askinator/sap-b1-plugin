@@ -1,6 +1,6 @@
 ---
 name: sap-b1-credit-memos
-description: "Create credit memos in SAP Business One via the Service Layer MCP — AR credit memos (CreditNotes) to a customer and AP credit memos (PurchaseCreditNotes) from a vendor, either standalone or copied from the original invoice — and reverse or correct a posted document the right way. Use whenever the user wants to credit a customer, issue a refund or return, cancel or reverse a posted invoice, book a vendor credit, or undo a wrong posting. Also triggers on Danish requests: kreditnota, kreditér kunde, tilbageførsel, modpostering, annuller faktura, returnering, varer retur, leverandørkreditnota. Resolves the business partner, items, G/L accounts, and VAT group live for the connected company database."
+description: "Creates credit memos in SAP Business One via the Service Layer MCP — AR credit memos (CreditNotes) to a customer and AP credit memos (PurchaseCreditNotes) from a vendor, either standalone or copied from the original invoice — and reverses or corrects a posted document the right way. Use whenever the user wants to credit a customer, issue a refund or return, cancel or reverse a posted invoice, book a vendor credit, or undo a wrong posting. Also triggers on Danish requests: kreditnota, kreditér kunde, tilbageførsel, modpostering, annuller faktura, returnering, varer retur, leverandørkreditnota. Resolves the business partner, items, G/L accounts, and VAT group live for the connected company database."
 ---
 
 # SAP B1 — credit memos and reversals

@@ -1,6 +1,6 @@
 ---
 name: sap-b1-payments
-description: "Apply payments in SAP Business One via the Service Layer MCP — incoming payments from customers (IncomingPayments) and outgoing payments to vendors (VendorPayments), matched against open invoices and settled to a bank, cash, or card account. Use whenever the user wants to register a payment, mark an invoice as paid, record that a customer paid, pay a vendor bill, or reconcile a payment against open invoices. Also triggers on Danish requests: registrer betaling, indbetaling, kunde har betalt, betal leverandør, udbetaling, match betaling mod faktura, afstem betaling, marker faktura som betalt. Resolves the business partner, the open invoices, and the bank/cash/card G/L account live for the connected company database."
+description: "Applies payments in SAP Business One via the Service Layer MCP — incoming payments from customers (IncomingPayments) and outgoing payments to vendors (VendorPayments), matched against open invoices and settled to a bank, cash, or card account. Use whenever the user wants to register a payment, mark an invoice as paid, record that a customer paid, pay a vendor bill, or reconcile a payment against open invoices. Also triggers on Danish requests: registrer betaling, indbetaling, kunde har betalt, betal leverandør, udbetaling, match betaling mod faktura, afstem betaling, marker faktura som betalt. Resolves the business partner, the open invoices, and the bank/cash/card G/L account live for the connected company database."
 ---
 
 # SAP B1 — payments

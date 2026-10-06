@@ -1,6 +1,6 @@
 ---
 name: sap-b1-messages
-description: "Send internal SAP Business One messages/alerts (Messages entity) via the Service Layer MCP — to one user, several named users, or every user in a department, optionally with clickable links to B1 documents (orders, invoices, etc.) in the body. Use whenever the user wants to send a SAP message, notify or ping a colleague inside SAP, broadcast to a department or team, or test SAP message delivery. Also triggers on Danish requests: send en besked, sap besked, notificer afdelingen, informer teamet. Resolves the recipient(s) live for the connected company database — never guess a UserCode."
+description: "Sends internal SAP Business One messages/alerts (Messages entity) via the Service Layer MCP — to one user, several named users, or every user in a department, optionally with clickable links to B1 documents (orders, invoices, etc.) in the body. Use whenever the user wants to send a SAP message, notify or ping a colleague inside SAP, broadcast to a department or team, or test SAP message delivery. Also triggers on Danish requests: send en besked, sap besked, notificer afdelingen, informer teamet. Resolves the recipient(s) live for the connected company database — never guess a UserCode."
 ---
 
 # SAP B1 — internal messages
@@ -118,19 +118,9 @@ To make a row of the message open a document when clicked, add a `MessageDataCol
 - `ObjectKey` is the document's `DocEntry` (as a string).
 - `Value` is the text shown for that row.
 
-Common, well-known object-type codes — safe defaults, but verify anything unusual (UDOs, less
-common doc types) rather than guessing:
-
-| Document | Code |
-| --- | --- |
-| Sales Quotation | 23 |
-| Sales Order | 17 |
-| Delivery | 15 |
-| A/R Invoice | 13 |
-| A/R Credit Memo | 14 |
-| Purchase Order | 22 |
-| Goods Receipt PO | 20 |
-| A/P Invoice | 18 |
+Take the code from the object-type table in `sap-b1-overview/reference.md` (e.g. `17` sales order,
+`13` AR invoice). Verify anything not in that table (UDOs, less common doc types) rather than
+guessing.
 
 Resolve the actual `DocEntry` for whatever document the user means (e.g. via `sap_b1_get_document`
 or `sap_b1_sl_query`) before building the line — never invent one.

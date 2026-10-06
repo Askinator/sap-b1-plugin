@@ -4,6 +4,18 @@ This file holds knowledge that is the same across every company database: entity
 document object codes, and how to look values up live. It contains **no** company-specific
 account numbers, tax codes, or item codes — resolve those against the connected DB.
 
+## Contents
+
+- Common entity sets
+- DocObjectCodes (for `sap_b1_create_draft`)
+- Line types on documents — item vs service lines, reading `DocType`, the VAT note
+- Object types (for copy-from-base and `BaseType`)
+- Copy from base document
+- Draft-first: create, then finalize cleanly
+- Attaching files — settle intent before creating; the upload flow
+- Live-lookup recipes — G/L accounts, tax groups, SQL table docs
+- Cardinality and safety
+
 ## Common entity sets
 
 | Purpose | Entity set |
@@ -130,8 +142,8 @@ close, or convert. So there are two clean ways to run the safety gate; pick one 
 stray draft behind:
 
 - **Chat-receipt gate (default, no residue).** Build the payload, show the user a compact receipt
-  in chat, and on confirmation `POST` the real document with `sap_b1_sl_write`. No `Drafts` row is
-  created, so there is nothing to clean up.
+  in chat (the *confirmation receipt*), and on confirmation `POST` the real document with
+  `sap_b1_sl_write`. No `Drafts` row is created, so there is nothing to clean up.
 - **Persisted draft (when the user wants one in SAP).** Use `sap_b1_create_draft` so a colleague
   can review/approve it in the SAP client. Capture the returned `DraftEntry`. To finalize:
   - preferred — the user **adds/approves the draft inside SAP**, which converts it in place; or
@@ -209,4 +221,5 @@ official SDK field descriptions.
 - Do not collapse ambiguous lookups. If a name matches several accounts/partners, show the
   candidates and ask which one.
 - Keyed writes (`PATCH`/`DELETE`) must target a keyed resource, e.g. `Invoices(123)`.
-- For financial postings, prefer a draft first, then finalize after user confirmation.
+- For financial postings, confirm before posting — see *Draft-first* above for the chat-receipt
+  default and when to leave a draft in SAP instead.

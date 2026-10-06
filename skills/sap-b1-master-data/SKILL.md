@@ -1,6 +1,6 @@
 ---
 name: sap-b1-master-data
-description: "Create and maintain SAP Business One master data via the Service Layer MCP — business partners (BusinessPartners: customers and vendors) and items (Items) — so later documents have something to reference. Use whenever the user wants to create a new customer or vendor, add a business partner, set up a new item or product, update a partner's or item's details, or says a partner/item isn't in SAP yet. Also triggers on Danish requests: opret kunde, ny debitor, opret leverandør, ny kreditor, opret vare, nyt varenummer, stamdata, kundekartotek, varekartotek, ret kundeoplysninger. Resolves account groups, price lists, VAT groups, and G/L determinations live for the connected company database."
+description: "Creates and maintains SAP Business One master data via the Service Layer MCP — business partners (BusinessPartners: customers and vendors) and items (Items) — so later documents have something to reference. Use whenever the user wants to create a new customer or vendor, add a business partner, set up a new item or product, update a partner's or item's details, or says a partner/item isn't in SAP yet. Also triggers on Danish requests: opret kunde, ny debitor, opret leverandør, ny kreditor, opret vare, nyt varenummer, stamdata, kundekartotek, varekartotek, ret kundeoplysninger. Resolves account groups, price lists, VAT groups, and G/L determinations live for the connected company database."
 ---
 
 # SAP B1 — master data (business partners & items)

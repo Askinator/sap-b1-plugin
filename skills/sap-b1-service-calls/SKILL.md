@@ -1,6 +1,6 @@
 ---
 name: sap-b1-service-calls
-description: "Create and manage Service Calls (ServiceCalls) in SAP Business One via the Service Layer MCP — support tickets logged against a customer, with the activity → service call → hours → invoice workflow. Use whenever the user wants to create a service call, open or update a support ticket, log an issue for a customer, or ask about the IT support-to-invoice flow. Also triggers on Danish requests: opret en servicesag, support sag, sagsnummer, fejlmelding, reklamation, kundehenvendelse. Resolves the customer, contact, and any item/account references live for the connected company database."
+description: "Creates and manages Service Calls (ServiceCalls) in SAP Business One via the Service Layer MCP — support tickets logged against a customer, with the activity → service call → hours → invoice workflow. Use whenever the user wants to create a service call, open or update a support ticket, log an issue for a customer, or ask about the IT support-to-invoice flow. Also triggers on Danish requests: opret en servicesag, support sag, sagsnummer, fejlmelding, reklamation, kundehenvendelse. Resolves the customer, contact, and any item/account references live for the connected company database."
 ---
 
 # SAP B1 — service calls
@@ -69,7 +69,7 @@ Two steps:
      body: {
        "CardCode": "<resolved customer>",
        "Notes": "<what was done>",
-       "ActivityDate": "2026-07-08"
+       "ActivityDate": "<today, YYYY-MM-DD>"
      }
    ```
 2. **Attach it to the call** by PATCHing the call and adding the activity to its
