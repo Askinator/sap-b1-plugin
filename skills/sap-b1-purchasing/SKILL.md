@@ -12,8 +12,8 @@ the connected DB.
 ## Core rules
 
 - **Load the tools before judging what's there.** If the `sap_b1_*` tools are listed by name only,
-  load them all with one `ToolSearch` (`query: "sap_b1"`) before telling the user a capability is
-  missing. Once loaded, a missing tool is real gating: fall back (`sap_b1_sl_query` when
+  load them all with one `ToolSearch` (`query: "sap_b1"`, not a `select:` list of the ones you
+  expect to need) — never tell the user a capability is missing before that. Once loaded, a missing tool is real gating: fall back (`sap_b1_sl_query` when
   `sap_b1_sql_query` is absent; read what you can't write) and tell the user what to enable.
 - **Resolve every tenant code live.** Each company DB has its own chart of accounts, VAT groups,
   items, partners, and users. Look codes up against the connected DB — G/L accounts in
