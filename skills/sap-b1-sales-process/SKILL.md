@@ -79,8 +79,13 @@ To make the final invoice, hand off to `sap-b1-invoices` and copy from the deliv
 ## Notes
 
 - Reading status only? Use `sap-b1-lookups` — no writes.
-- `DocDueDate` on an order is the delivery/valid-until date; use the user's date or a sensible
-  default and say which.
+- **Orders — `DocDueDate` (delivery date) is required.** SAP rejects an order without it
+  ("Enter due date"), and does not derive it from payment terms. Use the user's date; if they gave
+  none, ask, or propose one and call it out on the receipt. SAP accepts a date before `DocDate`
+  without complaint, so check that yourself. Set it on drafts too — a draft saves fine without it,
+  but the real order it becomes still needs it.
+- **Quotations — omit `DocDueDate`** (valid-until) unless the user names one; SAP fills in a
+  default valid-until date.
 - Dates are `YYYY-MM-DD`. Resolve items and accounts live — never reuse codes from another
   company. Set `VatGroup` only when needed, per the VAT note in `sap-b1-overview/reference.md`.
 - If write tools aren't exposed, you can still read these documents with `sap_b1_get_document` /

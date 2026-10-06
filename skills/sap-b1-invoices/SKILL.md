@@ -52,7 +52,6 @@ sap_b1_sl_write
   body: {
     "CardCode": "<resolved>",
     "DocDate": "<today, YYYY-MM-DD>",
-    "DocDueDate": "<per payment terms, YYYY-MM-DD>",
     "DocumentLines": [
       { "ItemCode": "<resolved>", "Quantity": 2 }
     ]
@@ -80,6 +79,9 @@ same fields to `sap_b1_create_draft` plus `DocObjectCode: "oInvoices"` (or `"oPu
 ## Notes
 
 - Dates are `YYYY-MM-DD`. Use the user's date or today.
+- **Omit `DocDueDate`** unless the user names a due date. SAP derives it from the partner's payment
+  terms (AR and AP, standalone or copied from a base document — a base order's delivery date does
+  not carry over). A date you pass silently replaces the terms-derived one, installments included.
 - Omit `VatGroup` — SAP derives it. The VAT note in `sap-b1-overview/reference.md` covers the
   exceptions and the `TaxCode` localization.
 - **AP invoices:** set `NumAtCard` to the vendor's own invoice number when the user gives it —

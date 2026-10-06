@@ -153,6 +153,10 @@ stray draft behind:
 Never both `create_draft` and `POST` the real document without deleting the draft — that leaves an
 orphan draft duplicating a posted document.
 
+Drafts skip mandatory-field checks that a real `POST` enforces (e.g. a sales order's `DocDueDate`),
+so a draft that saved fine can still fail to post or convert. Build the draft with every field the
+real document needs.
+
 ## Attaching files (receipts, PDFs)
 
 ### Settle attachment intent *before* creating the record

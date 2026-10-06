@@ -76,8 +76,9 @@ sap_b1_sl_write
 
 ## Notes
 
-- On a PO, `DocDueDate` is the required-by/delivery date. Use the user's date or a sensible default
-  and say which.
+- **Always pass `DocDueDate` on a PO** — it's the required-by/delivery date. If omitted, SAP
+  silently sets it (and each line's `ShipDate`) to the document date, i.e. "required today". Use the
+  user's date; if they gave none, ask, or propose one and call it out on the receipt.
 - Dates are `YYYY-MM-DD`. Resolve items and accounts live — never reuse codes from another
   company. Set `VatGroup` only when needed, per the VAT note in `sap-b1-overview/reference.md`.
 - Reading status only (open POs, what's not yet received)? Use `sap-b1-lookups`.
