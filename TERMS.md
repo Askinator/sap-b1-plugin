@@ -7,12 +7,13 @@ These terms cover the **SAP Business One plugin for Claude** (`sap-b1`) publishe
 
 ## License
 
-The plugin is open source under the [MIT License](LICENSE). You may use, copy, modify, and
-distribute it under that license.
+The plugin is not open source; see [LICENSE](LICENSE). You may install and use it, unmodified,
+in Claude to work with SAP Business One. Copying, modifying, or redistributing it requires prior
+written permission from the copyright holder.
 
 ## No warranty
 
-The plugin is provided **"as is", without warranty of any kind**, as stated in the MIT License.
+The plugin is provided **"as is", without warranty of any kind**, as stated in the [LICENSE](LICENSE).
 It guides Claude when reading and writing data in your SAP Business One company database,
 including financial documents such as invoices, payments, and journal entries.
 

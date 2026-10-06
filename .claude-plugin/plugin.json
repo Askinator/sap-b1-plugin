@@ -21,6 +21,6 @@
   "supportUrl": "https://github.com/Askinator/sap-b1-plugin/issues",
   "privacyPolicyUrl": "https://github.com/Askinator/sap-b1-plugin/blob/main/PRIVACY.md",
   "termsOfServiceUrl": "https://github.com/Askinator/sap-b1-plugin/blob/main/TERMS.md",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "icon": "./.claude-plugin/icon.svg"
 }
