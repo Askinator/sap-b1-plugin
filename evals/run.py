@@ -128,7 +128,7 @@ def parse(events):
     `steps` keeps assistant text and tool calls in order: a receipt shown before an
     AskUserQuestion call lives in an earlier text block, not in the final answer.
     """
-    init, calls, by_id, final, cost, steps = {}, [], {}, "", 0.0, []
+    init, calls, by_id, final, cost, steps, failed = {}, [], {}, "", 0.0, [], False
     for e in events:
         if e.get("type") == "system" and e.get("subtype") == "init":
             init = e
@@ -153,8 +153,10 @@ def parse(events):
         elif e.get("type") == "result":
             final = e.get("result") or ""
             cost = e.get("total_cost_usd") or 0.0
+            failed = bool(e.get("is_error"))
     skills = [c["input"].get("skill", "") for c in calls if c["name"] == "Skill"]
-    return {"init": init, "calls": calls, "steps": steps, "skills": skills, "final": final, "cost": cost}
+    return {"init": init, "calls": calls, "steps": steps, "skills": skills, "final": final, "cost": cost,
+            "failed": failed}
 
 
 def short(tool_name):
@@ -374,6 +376,12 @@ def grade(case, arm, n, run, args):
     }
 
 
+def save(out, summary):
+    agg = aggregate(summary)
+    (out / "summary.json").write_text(json.dumps({"runs": summary, "cases": agg}, indent=2, ensure_ascii=False))
+    return agg
+
+
 def rejudge(out, cases, local, args):
     """Re-grade saved traces (after a judge or rubric fix) without re-running the agent."""
     summary = []
@@ -391,9 +399,7 @@ def rejudge(out, cases, local, args):
         data = json.loads(saved.read_text())
         summary = [r for r in (data["runs"] if isinstance(data, dict) else data)
                    if r["case"] not in regraded] + summary
-    agg = aggregate(summary)
-    (out / "summary.json").write_text(json.dumps({"runs": summary, "cases": agg}, indent=2, ensure_ascii=False))
-    print_aggregate(agg)
+    print_aggregate(save(out, summary))
 
 
 def main():
@@ -445,6 +451,11 @@ def main():
                 (out / f"{case['name']}.{arm}.{n}.jsonl").write_text(
                     "\n".join(json.dumps(e) for e in events))
                 run = parse(events)
+                if run["failed"]:
+                    # Usually a usage limit or an API error: stop instead of grading a broken run.
+                    save(out, summary)
+                    sys.exit(f"Agent session errored ({case['name']} {arm} run {n}): {run['final'][:300]}\n"
+                             f"Results so far: {out}")
                 if arm == "baseline" and any(p["name"] == "sap-b1" for p in run["init"].get("plugins", [])):
                     sys.exit("Baseline arm loaded a sap-b1 plugin anyway; baseline is invalid. Disable it and rerun.")
                 if case.get("needs_sap") and not has_sap_tools(run["init"]):
@@ -455,9 +466,7 @@ def main():
                 total_cost += run["cost"]
                 summary.append(grade(filled, arm, n, run, args))
 
-    agg = aggregate(summary)
-    (out / "summary.json").write_text(json.dumps({"runs": summary, "cases": agg}, indent=2, ensure_ascii=False))
-    print_aggregate(agg)
+    print_aggregate(save(out, summary))
     print(f"\nAgent cost ${total_cost:.2f} (judge not included). Results: {out}")
     failed = [r for r in summary if r["arm"] == "plugin"
               and not all(c["pass"] for c in r["checks"])]
