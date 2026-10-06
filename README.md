@@ -75,7 +75,9 @@ warranty; you remain responsible for what gets posted.
 ## License and trademarks
 
 Copyright © 2026 Aske Paustian. All rights reserved. You may install and use the plugin; copying,
-modifying, or redistributing it requires permission — see [LICENSE](LICENSE).
+modifying, or redistributing it requires permission — see [LICENSE](LICENSE). The plugin collects
+no data; see [PRIVACY.md](PRIVACY.md) and [TERMS.md](TERMS.md). Questions and bug reports:
+[GitHub Issues](https://github.com/Askinator/sap-b1-plugin/issues).
 
 This is an independent project, not affiliated with or endorsed by SAP SE. SAP and
 SAP Business One are trademarks or registered trademarks of SAP SE.

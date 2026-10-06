@@ -17,9 +17,11 @@
 #      resolves to marketplace.json only, so the plugin manifest is validated
 #      by explicit path — otherwise plugin.json is never checked at all.
 #      Both run --strict. Keep CLAUDE.md in .claude/, not the repo root: a
-#      root CLAUDE.md triggers a warning that fails --strict. The one tolerated
-#      warning is "Unknown field 'icon'": the plugin directory wants an icon in
-#      plugin.json, but the CLI schema doesn't know the field yet.
+#      root CLAUDE.md triggers a warning that fails --strict. The tolerated
+#      warnings are "Unknown field" for the directory-listing fields (icon,
+#      documentationUrl, supportUrl, privacyPolicyUrl, termsOfServiceUrl): the
+#      plugin directory wants them in plugin.json, but the CLI schema doesn't
+#      know them yet.
 #
 # Exits non-zero on any failure so CI / a pre-commit hook can block the drift.
 
@@ -53,16 +55,17 @@ done
 
 # --- 3. manifest validation (best effort) ------------------------------------
 echo "Manifest validation:"
-# Passes if --strict passes, or if every warning it raised is the known icon one.
+# Passes if --strict passes, or if every warning it raised is a known directory field.
+known_fields="Unknown field '(icon|documentationUrl|supportUrl|privacyPolicyUrl|termsOfServiceUrl)'"
 validate() {
   local target=$1 label=$2 out
   if out=$(claude plugin validate "$target" --strict 2>&1); then
     ok "$label --strict passed"; return
   fi
   if printf '%s\n' "$out" | grep -q '❯' \
-     && ! printf '%s\n' "$out" | grep '❯' | grep -vq "Unknown field 'icon'" \
+     && ! printf '%s\n' "$out" | grep '❯' | grep -Evq "$known_fields" \
      && ! printf '%s\n' "$out" | grep -Eq 'Found [0-9]+ errors?'; then
-    ok "$label --strict passed (ignoring known 'icon' warning)"
+    ok "$label --strict passed (ignoring known directory-field warnings)"
   else
     printf '%s\n' "$out"; err "$label --strict failed"
   fi
