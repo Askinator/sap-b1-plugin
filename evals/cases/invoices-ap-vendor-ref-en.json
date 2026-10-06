@@ -14,6 +14,7 @@
     "Resolves the vendor's CardCode (a supplier) and the ItemCode with live queries",
     "The receipt carries the vendor's invoice number VF-90817 as the vendor reference (NumAtCard)",
     "The receipt has the resolved item with quantity 10",
-    "Shows a confirmation receipt and stops to ask the user to confirm before posting"
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting",
+    "The receipt shows a unit price and line total with a currency code, or says no price was found and asks for one"
   ]
 }
