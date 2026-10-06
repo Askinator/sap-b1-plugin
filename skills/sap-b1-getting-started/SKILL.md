@@ -30,25 +30,30 @@ user up to get recurring value — not to rush into posting documents. Keep the 
   lookups as parallel calls, or as one `sap_b1_sql_query` when SQL is enabled.
 - **Confirm before anything financial posts.** For invoices, credit memos, payments, journal
   entries, and sales/purchasing documents, show a confirmation receipt and post only after the
-  user says yes. Other writes follow this skill's own steps. Use
-  `sap_b1_create_draft` only when the user wants a draft left in SAP; then either they approve it
-  in SAP, or you post the real document and remove the draft with
+  user says yes. The receipt shows the amounts that will post — each line's quantity, unit price,
+  and total (from the base document, the user, or the partner's price list: `ITM1.Price` where
+  `PriceList` is the partner's `OCRD.ListNum`) and the document total; for a journal entry or
+  payment, each account or invoice with its amount — not "set by SAP". Other writes follow this
+  skill's own steps. Use `sap_b1_create_draft` only when the user wants a draft left in SAP;
+  then either they approve it in SAP, or you post the real document and remove the draft with
   `sap_b1_sl_write method="DELETE" path="Drafts(<DraftEntry>)"` — never leave a draft beside the
   posted document. A draft skips mandatory-field checks, so give it every field the real document
   needs.
 - **Settle attachment intent up front.** If a file (PDF, receipt, email, image) is in the
   conversation and you will create or find a record, ask with `AskUserQuestion` whether to attach
   it — in the same turn as the receipt, not after the record exists. If the user already said,
-  don't ask again.
+  don't ask again. With no file in the conversation, don't raise attachments at all.
 - **Render chat output as widgets** — in scheduled and test runs too. Call
   `mcp__visualize__read_me` once, then `mcp__visualize__show_widget`: a confirmation receipt or a
   single balance/status as a data-record card, a set of options as a card grid. Multi-row lists
   stay markdown tables. Only if `show_widget` is absent, fall back to prose without mentioning it.
 - **Every amount carries its currency code.** Balances are in the company's local currency —
   resolve its code live (`OADM.MainCurncy` via `sap_b1_sql_query`); without SQL, say the amount
-  is in local currency rather than guess a code. On a foreign-currency document, show the lines in
-  the document currency, the local total with its code, and the exchange rate — as SAP returned
-  them, not computed.
+  is in local currency rather than guess a code. Read the partner's `Currency` before the receipt
+  (`##` means any currency: use the local one unless the user names another). When it is foreign,
+  the receipt shows the lines in that currency, SAP's rate for the document date (`ORTT` via
+  `sap_b1_sql_query`; without SQL, say SAP applies its rate on posting), and the local total with
+  its code, marked as an estimate at that rate. After posting, report the totals SAP returned.
 <!-- /core-rules -->
 
 ## 1. Confirm the connection first
