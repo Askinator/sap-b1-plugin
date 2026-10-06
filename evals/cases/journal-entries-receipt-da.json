@@ -2,13 +2,18 @@
   "name": "journal-entries-receipt-da",
   "query": "Bogfør en kvittering: kontorartikler for 500 kr. betalt med firmakortet i dag.",
   "needs_sap": true,
-  "expect_skills": ["sap-b1-journal-entries"],
-  "must_call_any": ["sap_b1_sl_query", "sap_b1_sql_query"],
+  "expect_skills": [
+    "sap-b1-journal-entries"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
   "expected_behavior": [
     "Looks up the expense account and the card/bank payment account in the chart of accounts (ChartOfAccounts or OACT) instead of using account numbers from memory",
-    "Proposes a balanced entry: 500 debit to the expense account and 500 credit to the payment account",
+    "Proposes a balanced entry for 500 kr. (expense debit and card/payment credit, optionally with a VAT split); if no expense account fits, shows the closest candidates and asks instead of picking one",
     "If several accounts plausibly match, shows the candidates and asks rather than picking silently",
-    "Shows a confirmation receipt and stops to ask the user to confirm before posting",
+    "Stops before posting: shows a confirmation receipt and asks to confirm, or first asks for an account it could not resolve; never posts with a guessed account",
     "Replies in Danish"
   ]
 }

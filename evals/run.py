@@ -189,7 +189,7 @@ def deterministic_checks(case, run):
     return checks
 
 
-def digest(run, limit=2000):
+def digest(run, limit=4000):
     """A compact trace for the judge: assistant text and tool calls in order, truncated
     results, and the final answer. Write inputs are kept nearly whole so payloads can be graded."""
     lines = []
