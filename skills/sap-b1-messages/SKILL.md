@@ -19,10 +19,14 @@ guess a `UserCode` or department code.
    *Resolving recipients* below.
 2. **Build `RecipientCollection`** — one entry per resolved user.
 3. **Optional: attach document links** — see *Linking documents*.
-4. **Create it** with `sap_b1_sl_write method="POST" path="Messages"`.
-5. **Report back** the created message's `Code` and exactly who it went to. For a department/team
-   broadcast, list the resolved members before sending — the user should see the fan-out, not just
-   the department name, since a typo in the filter can silently grab the wrong group.
+4. **Confirm the recipients when you chose them.** If you expanded a department/team or picked
+   between similar names, show the resolved members and the text, and send only after the user
+   says yes — a typo in the filter can silently grab the wrong group, and a sent message can't be
+   recalled. Skip this when the user named one unambiguous recipient and gave the text, or when the
+   send comes from a standing instruction the user wrote (e.g. a scheduled task's prompt): that
+   instruction is the confirmation.
+5. **Send it** with `sap_b1_sl_write method="POST" path="Messages"`.
+6. **Report back** the created message's `Code` and exactly who it went to.
 
 ## Resolving recipients
 

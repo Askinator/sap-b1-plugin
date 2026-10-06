@@ -1,6 +1,6 @@
 ---
 name: sap-b1-lookups
-description: "Read-only lookups in SAP Business One via the Service Layer MCP — business partner balances and aging, open/outstanding invoices, and the status of sales orders, quotations, deliveries, and purchase orders. Use whenever the user asks what a customer owes, whether an invoice is overdue, the status of an order or quotation, or wants a balance/statement/aging summary — without creating or changing anything. Also triggers on Danish requests: hvad skylder kunden, saldo, restance, forfaldne fakturaer, kontoudtog, ordrestatus, tilbudsstatus. Resolves the business partner and any codes live for the connected company database."
+description: "Read-only lookups in SAP Business One via the Service Layer MCP — business partner balances and aging, open/outstanding invoices, and the status of sales orders, quotations, deliveries, and purchase orders. Use whenever the user asks what a customer owes, which customers owe the most (top debtors, largest balances), whether an invoice is overdue, the status of an order or quotation, or wants a balance/statement/aging summary — without creating or changing anything. Also triggers on Danish requests: hvad skylder kunden, hvem skylder mest, største debitorer, saldo, restance, forfaldne fakturaer, kontoudtog, ordrestatus, tilbudsstatus. Resolves the business partner and any codes live for the connected company database."
 ---
 
 # SAP B1 — balances, aging, and document status lookups
