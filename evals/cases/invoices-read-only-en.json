@@ -1,0 +1,25 @@
+{
+  "name": "invoices-read-only-en",
+  "query": "Invoice {invoice_customer} for 2 x {invoice_item}.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-invoices"
+  ],
+  "hide_tools": [
+    "sap_b1_sl_write",
+    "sap_b1_create_draft",
+    "sap_b1_attach_file",
+    "sap_b1_prepare_upload",
+    "send_email_notification"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Recognises that this connection exposes no write tool, and tells the user the invoice cannot be posted from here",
+    "Tells the user what to enable (a write-capable server capability set) or how to post it in SAP themselves",
+    "Still resolves the customer and item live and shows what the invoice would contain",
+    "Does not claim an invoice was created and does not invent a document number"
+  ]
+}

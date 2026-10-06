@@ -1,0 +1,19 @@
+{
+  "name": "invoices-ap-vendor-ref-en",
+  "query": "Book the bill from {vendor_name}: their invoice number VF-90817, 10 x {purchase_item}.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-invoices"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Treats this as an AP invoice (PurchaseInvoices) from a vendor, not an AR invoice",
+    "Resolves the vendor's CardCode (a supplier) and the ItemCode with live queries",
+    "The receipt carries the vendor's invoice number VF-90817 as the vendor reference (NumAtCard)",
+    "The receipt has the resolved item with quantity 10",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting"
+  ]
+}

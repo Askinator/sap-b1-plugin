@@ -1,0 +1,30 @@
+{
+  "name": "messages-named-user-en",
+  "query": "Send a SAP message to {message_user}: \"The quarterly price list is ready for your review.\"",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-messages"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_write"
+  ],
+  "must_not_call": [
+    "sap_b1_create_draft",
+    "sap_b1_attach_file",
+    "sap_b1_prepare_upload",
+    "send_email_notification"
+  ],
+  "expect_write": [
+    {
+      "tool": "sap_b1_sl_write",
+      "method": "POST",
+      "path": "Messages"
+    }
+  ],
+  "expected_behavior": [
+    "Resolves the recipient's UserCode from the Users entity (or OUSR) rather than guessing it",
+    "Sends straight away without first asking the user to confirm, since one unambiguous recipient was named and the text was given",
+    "The message goes to exactly that one user, internal only (no email fan-out), and its text carries the sentence the user gave",
+    "Reports honestly that the send was blocked rather than claiming the message was sent"
+  ]
+}

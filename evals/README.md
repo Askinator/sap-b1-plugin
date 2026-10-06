@@ -32,10 +32,20 @@ project memory don't leak into the agent's context.
 python3 evals/run.py --runs 1                 # quick pass over every case
 python3 evals/run.py --case 'invoices-*'      # one area, 3 runs each
 python3 evals/run.py --baseline               # also run each case without the plugin
+python3 evals/run.py --report evals/results/<a> evals/results/<b>   # merge staged runs
 ```
 
-Default model is `claude-sonnet-5-5`; the rubric is graded by `haiku`. Results go to
-`evals/results/<timestamp>/` (gitignored — traces contain live company data). Runs bill like any
+Default model is `claude-sonnet-5-5`; the rubric is graded by `haiku`. The judge sees the
+assistant's text and tool calls in order, so a receipt shown before a question still counts, and
+it is told the agent is expected to stop at a confirmation receipt. Results go to
+`evals/results/<timestamp>/` (gitignored — traces contain live company data): one `.jsonl` trace
+per run and a `summary.json` with `runs` (each run's checks and rubric verdicts) and `cases`
+(per case and arm: pass rates across runs, each check and criterion as passed/runs, and the
+plugin-minus-baseline delta). The same table prints at the end of a run.
+
+Big runs can be staged — e.g. a few `--case` globs at a time — and merged afterwards with
+`--report`, which re-aggregates the `summary.json` of each given directory. The baseline arm skips
+the skill-triggering checks, so the delta compares only the checks both arms ran. Runs bill like any
 Claude Code session: against the subscription's usage limits when logged in with claude.ai, or the
 API key otherwise. The printed dollar figure is the API-price equivalent either way.
 
@@ -51,8 +61,15 @@ One JSON file per case in [cases/](cases/):
 | `expect_skills` | Skills that must be invoked (bare names, e.g. `sap-b1-invoices`) |
 | `forbid_sap_skills` | Negative case: no `sap-b1-*` skill may be invoked |
 | `must_call_any` | At least one of these `sap_b1_*` tools must be called |
-| `must_not_call` | Tools that must not be called (defaults to every write tool) |
+| `must_not_call` | Tools that must not be called (defaults to every write tool). A case that expects one write lists the other write tools here |
+| `expect_write` | Writes the run must *attempt* (the hook still blocks them): `{"tool": ..., <input field>: <value>}`, string values matched as a prefix, e.g. `{"tool": "sap_b1_sl_write", "method": "POST", "path": "Messages"}` |
+| `hide_tools` | Tools removed from the session entirely (`--disallowedTools`), to simulate a restricted deployment — e.g. every write tool for a read-only server |
+| `fixtures` | Files from [fixtures/](fixtures/) copied into the run's working directory, for cases about a file in the conversation. Fixtures are public: invented content only |
 | `expected_behavior` | Rubric for the judge — only what the trace can't show deterministically |
+
+In the demo company these evals were built against, `DocEntry` always equals `DocNum`, so a case
+can't tell whether the agent resolved the key or used the quoted number directly; criteria only
+check that the document is looked up by the `DocNum` the user gave.
 
 **This repo is public.** Case files must not name a company, customer, item, account, or
 document from any real database — put those in `local.json` and reference them as `{key}`.

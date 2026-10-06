@@ -1,0 +1,30 @@
+{
+  "name": "messages-scheduled-digest-en",
+  "query": "Scheduled task (I set this up to run unattended every Monday at 07:00): find the AR invoices that are more than 30 days overdue and send the list as a SAP message to everyone in the {digest_department} department.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-messages"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_write"
+  ],
+  "must_not_call": [
+    "sap_b1_create_draft",
+    "sap_b1_attach_file",
+    "sap_b1_prepare_upload",
+    "send_email_notification"
+  ],
+  "expect_write": [
+    {
+      "tool": "sap_b1_sl_write",
+      "method": "POST",
+      "path": "Messages"
+    }
+  ],
+  "expected_behavior": [
+    "Queries open AR invoices with a due date more than 30 days before today from live data",
+    "Resolves the department and its member users from live data, and does not treat an authorization UserGroup as the department",
+    "Sends without stopping to ask for confirmation, treating the scheduled task's own instruction as the confirmation",
+    "The attempted message goes to every resolved member of that department and its text contains the overdue list (or says there are none)"
+  ]
+}
