@@ -26,20 +26,20 @@ always edits to skill markdown or the manifest/marketplace JSON.
 ## The one architectural invariant: discovery-first
 
 Every company database has a **different chart of accounts, VAT/tax groups, item catalog, and
-payment accounts.** The central design rule — stated in [skills/sap-b1-overview/SKILL.md](skills/sap-b1-overview/SKILL.md)
-and repeated in every task skill — is that skills **never hardcode or guess** an account number,
+payment accounts.** The central design rule — stated in the shared core-rules block that every
+`skills/*/SKILL.md` carries — is that skills **never hardcode or guess** an account number,
 tax code, item code, or G/L account. They **resolve them live** against the connected DB via
 `sap_b1_discover` / `sap_b1_sl_query` / `sap_b1_sql_query`.
 
 When editing or adding a skill, preserve this: any value that varies per tenant must be looked up,
 not baked in. `skills/sap-b1-overview/reference.md` is the deliberate exception — it holds only
 **tenant-invariant** knowledge (entity-set names, `DocObjectCode`s, line-type shapes, lookup
-recipes). Company-specific numbers must never enter it.
+recipes). Company-specific numbers must never enter it. Task skills inline the invariant facts
+they need (object types, copy-from-base fields) rather than pointing into it — see below.
 
 The efficiency corollary: discovery-first means *never guess*, not *re-discover every task*. Skills phrase `describe`/resolve steps as **conditional and session-aware** ("only if
 unsure, skip if already described this session"), batch independent lookups into one round trip,
-and let SAP's own defaulting work (e.g. omit `VatGroup` and let tax determination derive it — see
-the VAT note in `reference.md`). When adding a skill, don't reintroduce unconditional per-task
+and let SAP's own defaulting work (e.g. omit `VatGroup` and let tax determination derive it). When adding a skill, don't reintroduce unconditional per-task
 describe steps or mark SAP-derivable fields as always-required.
 
 ## This repo is public — keep tenant data out of it
@@ -73,19 +73,25 @@ all specifics are resolved live and the URL is never baked in.
 - **`sap-b1-getting-started`** — first-run onboarding: confirms the MCP connection, tours the skills,
   recommends Cowork, and offers to set up a recurring read-only scheduled digest. Routing only — no
   writes of its own.
-- **`sap-b1-overview`** — orientation: the discovery-first rule, the tool map, and tool-availability
-  caveats. Its `reference.md` is the shared tenant-invariant knowledge base other skills point to —
-  entity/DocObjectCode maps, the object-type table, the **copy-from-base** recipe, the **draft-first
-  finalize** rule, and the file-attachment (`prepare_upload`/`attach_file`) flow — including the
-  rule that attachment intent is settled with an `AskUserQuestion` *before* the record is written.
+- **`sap-b1-overview`** — orientation for requests no task skill covers: the tool map, the task-skill
+  index, and `reference.md` (entity/DocObjectCode maps, object types, copy-from-base, draft
+  finalize, the upload flow, lookup recipes). It is **not** a prerequisite — no skill tells Claude
+  to read it first.
 - **Task skills** — `sap-b1-lookups` (read-only balances/aging/status), `sap-b1-invoices`,
   `sap-b1-credit-memos`, `sap-b1-payments`, `sap-b1-sales-process`, `sap-b1-purchasing`,
   `sap-b1-journal-entries`, `sap-b1-service-calls`, `sap-b1-master-data`, `sap-b1-messages`
   (internal SAP B1 messages/alerts), `sap-b1-live-artifacts` (refreshable Cowork dashboards).
-  Each is self-contained but defers cross-cutting facts to the overview/reference rather than
-  duplicating them. The
-  lifecycle skills (sales, purchasing) and credit memos share the single copy-from-base recipe in
-  `reference.md` instead of each re-explaining `BaseType`/`BaseEntry`/`BaseLine`.
+  Each is **self-contained**: it never relies on another skill being loaded or points into another
+  skill's files. Evals showed the overview loaded in only a few runs and the cross-skill
+  `reference.md` was never read, so "read the overview first" didn't hold.
+
+**Shared blocks.** Rules every skill needs live in a marked block copied verbatim into each
+`SKILL.md`: `<!-- core-rules ... -->` (tool loading, live resolution, resolve-once, confirm before
+financial posts + draft finalize, attachment intent, widget rendering, currency) in every skill, and
+`<!-- attach-files ... -->` (the upload flow) in the skills that attach files. To change a rule,
+edit one copy and paste it into the rest — `scripts/check.sh` fails if copies differ, if a skill
+lacks core-rules, or if a skill points into `sap-b1-overview/`. Skill-specific facts (object types
+for `BaseType`, the VAT exceptions) are written into the skill that needs them.
 
 Skills are auto-discovered and invoked based on their frontmatter **`description`** — that field is
 the trigger surface, so keep it dense with the phrasings a real user would type.
@@ -107,7 +113,7 @@ configured. Skills must degrade gracefully (fall back to `sl_query`, read-only, 
 what to enable) rather than assume a tool is present. Financial actions are **confirm-first**: show
 a compact receipt in chat → post the real document only after user confirmation. `create_draft` is
 for when the user wants a draft left in SAP to review, and that draft must then be finalized
-cleanly (the draft-first rule in `reference.md`).
+cleanly (the draft rule in the core-rules block).
 
 ## Localization decision (don't re-litigate)
 
@@ -123,7 +129,7 @@ a skill, include Danish trigger terms in the description from the first draft. S
 There are no code commands. The operations that exist:
 
 ```bash
-# Consistency check: skill-index coverage across the hub docs + manifest validation
+# Consistency check: skill-index coverage, shared-block drift, manifest validation
 scripts/check.sh
 
 # Validate the plugin manifest + skills (run from repo root)
@@ -145,4 +151,5 @@ Open work (tracked as GitHub issues on
 [Askinator/sap-b1-plugin](https://github.com/Askinator/sap-b1-plugin/issues)): deeper reconciliation
 (bank statement matching), returns/RMA flows, and a dedicated attachments skill once the
 `prepare_upload`/`attach_file` flow has been exercised against a live tenant. When adding one, keep
-tenant-specific values resolved live and push any new tenant-invariant fact into `reference.md`.
+tenant-specific values resolved live; put a new tenant-invariant fact in the skill that needs it
+(and in `reference.md` for the overview), or in a shared block if every skill needs it.

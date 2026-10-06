@@ -6,11 +6,46 @@ description: "Creates and maintains SAP Business One master data via the Service
 # SAP B1 — master data (business partners & items)
 
 Create and update the records that documents reference: `BusinessPartners` (customers/vendors) and
-`Items`. **Read `sap-b1-overview` before your first tool call** — it carries the output-rendering
-policy and the tool-availability fallbacks that apply here.
+`Items`. Resolve groups, price lists, VAT groups, and any G/L determination **live** for the
+connected DB.
 
-Follow the discovery-first rule: resolve groups, price lists, VAT groups, and any G/L determination
-**live** for the connected DB.
+<!-- core-rules: identical in every SAP B1 skill; scripts/check.sh enforces it -->
+## Core rules
+
+- **Load the tools before judging what's there.** If the `sap_b1_*` tools are listed by name only,
+  load them all with one `ToolSearch` (`query: "sap_b1"`) before telling the user a capability is
+  missing. Once loaded, a missing tool is real gating: fall back (`sap_b1_sl_query` when
+  `sap_b1_sql_query` is absent; read what you can't write) and tell the user what to enable.
+- **Resolve every tenant code live.** Each company DB has its own chart of accounts, VAT groups,
+  items, partners, and users. Look codes up against the connected DB — G/L accounts in
+  `ChartOfAccounts` (field `Name`; SQL table `OACT`), tax groups via
+  `sap_b1_discover action="search" query="Tax"` — never from memory or another company. If a code
+  won't resolve, stop and ask; if a name matches several records, show them and ask which one.
+- **Resolve once, in one round trip.** Reuse codes and entity descriptions already resolved this
+  session. Run `describe` only when unsure of a field or after a call failed. Issue independent
+  lookups as parallel calls, or as one `sap_b1_sql_query` when SQL is enabled.
+- **Confirm before anything financial posts.** For invoices, credit memos, payments, journal
+  entries, and sales/purchasing documents, show a confirmation receipt and post only after the
+  user says yes. Other writes follow this skill's own steps. Use
+  `sap_b1_create_draft` only when the user wants a draft left in SAP; then either they approve it
+  in SAP, or you post the real document and remove the draft with
+  `sap_b1_sl_write method="DELETE" path="Drafts(<DraftEntry>)"` — never leave a draft beside the
+  posted document. A draft skips mandatory-field checks, so give it every field the real document
+  needs.
+- **Settle attachment intent up front.** If a file (PDF, receipt, email, image) is in the
+  conversation and you will create or find a record, ask with `AskUserQuestion` whether to attach
+  it — in the same turn as the receipt, not after the record exists. If the user already said,
+  don't ask again.
+- **Render chat output as widgets** — in scheduled and test runs too. Call
+  `mcp__visualize__read_me` once, then `mcp__visualize__show_widget`: a confirmation receipt or a
+  single balance/status as a data-record card, a set of options as a card grid. Multi-row lists
+  stay markdown tables. Only if `show_widget` is absent, fall back to prose without mentioning it.
+- **Every amount carries its currency code.** Balances are in the company's local currency —
+  resolve its code live (`OADM.MainCurncy` via `sap_b1_sql_query`); without SQL, say the amount
+  is in local currency rather than guess a code. On a foreign-currency document, show the lines in
+  the document currency, the local total with its code, and the exchange rate — as SAP returned
+  them, not computed.
+<!-- /core-rules -->
 
 ## Check it doesn't already exist first
 

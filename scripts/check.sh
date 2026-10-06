@@ -23,6 +23,11 @@
 #      documentationUrl, supportUrl, privacyPolicyUrl, termsOfServiceUrl): the
 #      plugin directory wants them in plugin.json, but the CLI schema doesn't
 #      know them yet.
+#   4. Shared skill blocks stay identical. Skills can't count on another skill
+#      being loaded, so rules every skill needs are copied into each one between
+#      `<!-- name ... -->` / `<!-- /name -->` markers. Every SKILL.md must carry
+#      the core-rules block, every copy of a block must match byte for byte, and
+#      no skill may point into another skill's files (sap-b1-overview/...).
 #
 # Exits non-zero on any failure so CI / a pre-commit hook can block the drift.
 
@@ -55,6 +60,33 @@ for dir in skills/*/; do
   esac
 done
 [ "$fail" -eq 0 ] && ok "all skills referenced in README, AGENTS, the overview index, and the getting-started tour"
+
+# --- 4. shared skill blocks are identical ------------------------------------
+echo "Shared skill blocks:"
+block_fail=0
+block() { sed -n "/^<!-- $1[: ]/,/^<!-- \/$1 -->/p" "$2"; }
+for name in core-rules attach-files; do
+  ref="" ref_sum=""
+  for f in skills/*/SKILL.md; do
+    body=$(block "$name" "$f")
+    if [ -z "$body" ]; then
+      [ "$name" = core-rules ] && { err "$f has no $name block"; block_fail=1; }
+      continue
+    fi
+    sum=$(printf '%s' "$body" | cksum)
+    if [ -z "$ref" ]; then ref=$f ref_sum=$sum
+    elif [ "$sum" != "$ref_sum" ]; then
+      err "$name block in $f differs from $ref"; block_fail=1
+    fi
+  done
+done
+for f in skills/*/SKILL.md; do
+  case "$f" in skills/sap-b1-overview/*) continue ;; esac
+  if grep -q 'sap-b1-overview/' "$f"; then
+    err "$f points into sap-b1-overview/ — copy what it needs into the skill instead"; block_fail=1
+  fi
+done
+[ "$block_fail" -eq 0 ] && ok "core-rules in every skill; shared blocks identical; no cross-skill file pointers"
 
 # --- 3. manifest validation (best effort) ------------------------------------
 echo "Manifest validation:"

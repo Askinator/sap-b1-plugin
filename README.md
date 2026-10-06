@@ -52,7 +52,7 @@ connection and walks you through the rest.
 Claude picks these up automatically for relevant requests:
 
 - `sap-b1-getting-started` — first-run onboarding: verify the connection, tour the skills, work in Cowork, set up a scheduled digest.
-- `sap-b1-overview` — orientation, tool map, and the discovery-first rule (+ `reference.md`).
+- `sap-b1-overview` — orientation for anything the task skills don't cover: tool map, skill index, and a tenant-invariant reference.
 - `sap-b1-lookups` — read-only balances, aging, and order/quotation/PO status.
 - `sap-b1-invoices` — AR/AP invoices (item and service lines).
 - `sap-b1-credit-memos` — AR/AP credit memos and reversing posted documents.
