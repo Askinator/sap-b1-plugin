@@ -18,6 +18,7 @@ Usage (from anywhere):
   python3 evals/run.py --case 'lookups-*' --runs 1
   python3 evals/run.py --baseline               # also run without the plugin
   python3 evals/run.py --report evals/results/A evals/results/B   # re-aggregate saved runs
+  python3 evals/run.py --rejudge evals/results/A   # re-grade saved traces, no agent runs
 
 The SAP connection comes from evals/local.mcp.json (gitignored; see
 evals/README.md). Without it, cases marked `needs_sap` are skipped. Results

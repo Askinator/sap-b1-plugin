@@ -10,7 +10,10 @@ session with this repo loaded via `--plugin-dir`, against a live company databas
 A `PreToolUse` hook ([hooks/block_writes.py](hooks/block_writes.py)) blocks `sap_b1_sl_write`,
 `sap_b1_create_draft`, `sap_b1_attach_file`, `sap_b1_prepare_upload`, and
 `send_email_notification`. The tools stay *visible* so the skills follow their real
-confirm-before-posting path; a call to one is blocked and fails the case. Runs also use
+confirm-before-posting path; a call to one is blocked and fails the case (unless the case expects
+that write — see `expect_write` — in which case the blocked attempt is what passes it). The one
+exception to visibility is a case with `hide_tools`, which removes tools to simulate a restricted
+deployment. Runs also use
 `--permission-mode default` with an allowlist of read tools only, so a CLI default of auto mode
 is never inherited. Runs start in an empty temp directory, so this repo's `.claude/CLAUDE.md` and
 project memory don't leak into the agent's context.
@@ -31,11 +34,16 @@ project memory don't leak into the agent's context.
 ```bash
 python3 evals/run.py --runs 1                 # quick pass over every case
 python3 evals/run.py --case 'invoices-*'      # one area, 3 runs each
+python3 evals/run.py --case 'lookups-*,negative-non-sap'   # comma-separate several globs
 python3 evals/run.py --baseline               # also run each case without the plugin
 python3 evals/run.py --report evals/results/<a> evals/results/<b>   # merge staged runs
+python3 evals/run.py --rejudge evals/results/<a>   # re-grade saved traces after a rubric/judge fix
 ```
 
-Default model is `claude-sonnet-5-5`; the rubric is graded by `haiku`. The judge sees the
+Default model is `claude-sonnet-5-5`; the rubric is graded by `haiku`, which is cheap but noisy —
+with a few runs per case, treat rubric rates as soft and the deterministic checks (skill invoked,
+no write attempted) as the hard signal. Phrase criteria so every correct path passes: e.g. "shows
+a receipt *or* first asks for an account it couldn't resolve". The judge sees the
 assistant's text and tool calls in order, so a receipt shown before a question still counts, and
 it is told the agent is expected to stop at a confirmation receipt. Results go to
 `evals/results/<timestamp>/` (gitignored — traces contain live company data): one `.jsonl` trace
@@ -44,7 +52,11 @@ per run and a `summary.json` with `runs` (each run's checks and rubric verdicts)
 plugin-minus-baseline delta). The same table prints at the end of a run.
 
 Big runs can be staged — e.g. a few `--case` globs at a time — and merged afterwards with
-`--report`, which re-aggregates the `summary.json` of each given directory. The baseline arm skips
+`--report`, which re-aggregates the `summary.json` of each given directory. If an agent session
+errors mid-batch (usually a usage limit), the runner saves the results so far and stops rather
+than grading the broken run. `--rejudge` re-grades a directory's saved traces with the current
+cases and judge — no agent runs, so it only costs judge calls; with `--case` it re-grades those
+cases and keeps the rest of that directory's summary. The baseline arm skips
 the skill-triggering checks, so the delta compares only the checks both arms ran. Runs bill like any
 Claude Code session: against the subscription's usage limits when logged in with claude.ai, or the
 API key otherwise. The printed dollar figure is the API-price equivalent either way.
