@@ -126,7 +126,7 @@ a skill, include Danish trigger terms in the description from the first draft. S
 
 ## Common operations
 
-There are no code commands. The operations that exist:
+There is no build. The operations that exist:
 
 ```bash
 # Consistency check: skill-index coverage, shared-block drift, manifest validation
@@ -138,7 +138,17 @@ claude plugin validate . --strict
 # Install locally for testing (in a Claude Code session)
 /plugin marketplace add <this-repo-path-or-url>
 /plugin install sap-b1@sap-b1-plugins
+
+# Skill evals: triggering + behaviour, headless against a live company DB (writes always blocked)
+python3 evals/run.py --probe
+python3 evals/run.py --runs 1
 ```
+
+**Evals** ([evals/README.md](evals/README.md)) run each case through `claude -p` with this repo as
+`--plugin-dir` and a hook that blocks every SAP write. They need a live SAP connection
+(`evals/local.mcp.json`) and DB-specific fills (`evals/local.json`), both gitignored, so they run
+locally, not in CI. Case files are public: they reference records only as `{placeholders}`. Rerun
+the affected cases after changing a skill's description or workflow.
 
 **Shipping:** bump `version` in `.claude-plugin/plugin.json`, commit, push. The bump is what makes
 an installed copy re-sync — pushing skill edits without it can leave users on the previous version.

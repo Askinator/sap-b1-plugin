@@ -1,0 +1,19 @@
+{
+  "name": "sales-order-to-delivery-en",
+  "query": "Ship sales order {order_docnum} in full.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-sales-process"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query",
+    "sap_b1_get_document"
+  ],
+  "expected_behavior": [
+    "Looks the order up by the DocNum the user quoted",
+    "The proposed delivery is copied from the order — the receipt references the base order rather than presenting hand-typed lines",
+    "Covers every open line of the order, since the user asked to ship it in full",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting"
+  ]
+}

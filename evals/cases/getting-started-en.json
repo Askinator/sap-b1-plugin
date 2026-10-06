@@ -1,0 +1,12 @@
+{
+  "name": "getting-started-en",
+  "query": "I just connected the SAP Business One plugin. What can you do with it, and how do I start?",
+  "needs_sap": true,
+  "expect_skills": ["sap-b1-getting-started"],
+  "expected_behavior": [
+    "Verifies the connection with a read-only call (e.g. sap_b1_discover) or explains how to check it",
+    "Gives a tour of what the plugin can do, covering several task areas (lookups, invoices, payments, etc.)",
+    "Suggests a safe, read-only first task",
+    "Does not create or post anything"
+  ]
+}

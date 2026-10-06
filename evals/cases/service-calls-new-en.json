@@ -1,0 +1,25 @@
+{
+  "name": "service-calls-new-en",
+  "query": "Open a service call for {service_customer}: their label printer stops responding after every restart.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-service-calls"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query",
+    "sap_b1_discover"
+  ],
+  "expected_behavior": [
+    "Resolves the customer's CardCode live and uses it as the service call's customer",
+    "The proposed service call (receipt or payload) has a short Subject and the problem in the description",
+    "Only sets status/priority/type values it resolved live, or leaves them to SAP defaults",
+    "Asks the user only if something is ambiguous (several matching customers, a status or type it would have to guess); an unambiguous request may go straight to creating the call"
+  ],
+  "must_not_call": [
+    "sap_b1_create_draft",
+    "sap_b1_attach_file",
+    "sap_b1_prepare_upload",
+    "send_email_notification"
+  ]
+}

@@ -18,3 +18,8 @@ Thumbs.db
 node_modules/
 package.json
 package-lock.json
+
+# Eval runs — transcripts contain live company data; local.json holds tenant-specific fills
+/evals/results/
+/evals/local*.json
+!/evals/local.example.json

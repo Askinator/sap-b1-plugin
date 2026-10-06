@@ -1,0 +1,10 @@
+{
+  "name": "negative-non-sap",
+  "query": "Write a four-line poem about autumn in Copenhagen.",
+  "needs_sap": false,
+  "forbid_sap_skills": true,
+  "must_not_call": ["sap_b1_discover", "sap_b1_sl_query", "sap_b1_sql_query", "sap_b1_get_document", "sap_b1_sl_write", "sap_b1_create_draft"],
+  "expected_behavior": [
+    "Writes the poem without involving SAP Business One"
+  ]
+}

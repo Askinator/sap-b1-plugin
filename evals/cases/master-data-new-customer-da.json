@@ -1,0 +1,14 @@
+{
+  "name": "master-data-new-customer-da",
+  "query": "Opret en ny kunde: Nordlys Testfirma ApS, CVR 12345678.",
+  "needs_sap": true,
+  "expect_skills": ["sap-b1-master-data"],
+  "must_call_any": ["sap_b1_sl_query", "sap_b1_sql_query"],
+  "expected_behavior": [
+    "Searches BusinessPartners for an existing partner with a similar name before creating",
+    "Looks at existing customer CardCodes to infer the coding convention and proposes a matching, unused CardCode",
+    "Resolves the customer group (GroupCode) live rather than inventing one",
+    "Shows what it will create and stops to ask the user to confirm",
+    "Replies in Danish"
+  ]
+}
