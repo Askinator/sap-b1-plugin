@@ -1,113 +1,74 @@
 ---
 name: sap-b1-overview
-description: "Orientation for working with SAP Business One over the hosted Service Layer MCP server (sap_b1_* tools). Use at the start of any SAP B1 task — reading or creating documents, business partners, items, invoices, journal entries, service calls — to pick the right tool and to resolve account numbers, VAT groups, and payment accounts correctly. Also triggers on Danish SAP B1 requests (e.g. bogføring, kontoplan, debitor/kreditor, moms, forespørgsel i SAP) to route to the right task skill. Explains the discovery-first rule that keeps work correct across different company databases."
+description: "Orientation for SAP Business One over the hosted Service Layer MCP server (sap_b1_* tools): the tool map, which task skill handles what, and a tenant-invariant reference of entity sets, DocObjectCodes, and object types. Use for SAP B1 requests that no task skill covers — ad-hoc queries on other entities, exploring the schema or a table, choosing the right sap_b1_* tool, or questions about how the Service Layer works — and when unsure which SAP B1 skill fits. Also triggers on general Danish SAP B1 questions (e.g. kontoplan, forespørgsel i SAP, hvilken tabel, hvilket felt). Resolves every tenant-specific code live for the connected company database."
 ---
 
 # SAP Business One — orientation
 
 This plugin connects to a **hosted SAP B1 Service Layer MCP server** (one URL per company
-database). The tools are named `sap_b1_*`. Before doing SAP work, read this skill to choose the
-right tool and to follow the discovery-first rule below.
+database), whose tools are named `sap_b1_*`. Each task skill below carries the rules it needs; this
+skill covers what falls between them — ad-hoc reads, schema questions, and picking a tool.
 
-## The discovery-first rule (read this first)
+<!-- core-rules: identical in every SAP B1 skill; scripts/check.sh enforces it -->
+## Core rules
 
-Every company database has a **different chart of accounts, VAT/tax groups, item catalog, and
-payment accounts**. Never hardcode or guess an account number, tax code, item code, or G/L
-account from memory or from another company. **Resolve them live** against the connected DB:
-
-- **Entities and fields** → `sap_b1_discover` (`action: "list_entity_sets" | "describe" | "search"`).
-  Describe an entity before querying or writing to it to confirm field names for *this* DB.
-- **G/L accounts** → query the `ChartOfAccounts` entity via `sap_b1_sl_query`
-  (filter on `Name`/`AcctName`), or `sap_b1_sql_query` against table `OACT` if SQL is enabled.
-- **VAT / tax groups** → query the tax-code entity (search discover for `Tax`/`Vat`), or table
-  `OVTG` via SQL.
-- **Table/column meanings** → `sap_b1_sql_reference` (e.g. `table: "OINV"`) before composing SQL.
-
-If you cannot resolve a required code, **stop and ask the user** rather than inventing one.
-
-### Resolve once, and in one round trip
-
-Discovery-first means *never guess* — it does not mean *re-discover*. Within a conversation
-against the same company DB:
-
-- **Reuse what you already resolved.** An entity you described, or a `CardCode`, account, item, or
-  VAT code you resolved earlier in this session, is still valid — don't describe or look it up
-  again just because a different skill was invoked for the next task.
-- **Describe on uncertainty, not ritual.** Run `describe` when you're unsure of a field name or a
-  call failed — not as a mandatory step before every operation.
-- **Batch independent lookups.** Resolving a partner and an item (or several accounts) are
-  independent reads — issue them as parallel tool calls in a single turn, or fold them into one
-  `sap_b1_sql_query` call when SQL is enabled, instead of paying sequential round trips.
+- **Load the tools before judging what's there.** If the `sap_b1_*` tools are listed by name only,
+  load them all with one `ToolSearch` (`query: "sap_b1"`) before telling the user a capability is
+  missing. Once loaded, a missing tool is real gating: fall back (`sap_b1_sl_query` when
+  `sap_b1_sql_query` is absent; read what you can't write) and tell the user what to enable.
+- **Resolve every tenant code live.** Each company DB has its own chart of accounts, VAT groups,
+  items, partners, and users. Look codes up against the connected DB — G/L accounts in
+  `ChartOfAccounts` (field `Name`; SQL table `OACT`), tax groups via
+  `sap_b1_discover action="search" query="Tax"` — never from memory or another company. If a code
+  won't resolve, stop and ask; if a name matches several records, show them and ask which one.
+- **Resolve once, in one round trip.** Reuse codes and entity descriptions already resolved this
+  session. Run `describe` only when unsure of a field or after a call failed. Issue independent
+  lookups as parallel calls, or as one `sap_b1_sql_query` when SQL is enabled.
+- **Confirm before anything financial posts.** For invoices, credit memos, payments, journal
+  entries, and sales/purchasing documents, show a confirmation receipt and post only after the
+  user says yes. Other writes follow this skill's own steps. Use
+  `sap_b1_create_draft` only when the user wants a draft left in SAP; then either they approve it
+  in SAP, or you post the real document and remove the draft with
+  `sap_b1_sl_write method="DELETE" path="Drafts(<DraftEntry>)"` — never leave a draft beside the
+  posted document. A draft skips mandatory-field checks, so give it every field the real document
+  needs.
+- **Settle attachment intent up front.** If a file (PDF, receipt, email, image) is in the
+  conversation and you will create or find a record, ask with `AskUserQuestion` whether to attach
+  it — in the same turn as the receipt, not after the record exists. If the user already said,
+  don't ask again.
+- **Render chat output as widgets** — in scheduled and test runs too. Call
+  `mcp__visualize__read_me` once, then `mcp__visualize__show_widget`: a confirmation receipt or a
+  single balance/status as a data-record card, a set of options as a card grid. Multi-row lists
+  stay markdown tables. Only if `show_widget` is absent, fall back to prose without mentioning it.
+- **Every amount carries its currency code.** Balances are in the company's local currency —
+  resolve its code live (`OADM.MainCurncy` via `sap_b1_sql_query`); without SQL, say the amount
+  is in local currency rather than guess a code. On a foreign-currency document, show the lines in
+  the document currency, the local total with its code, and the exchange rate — as SAP returned
+  them, not computed.
+<!-- /core-rules -->
 
 ## Which tool for which job
 
 | Need | Tool |
 | --- | --- |
-| Explore schema / confirm fields | `sap_b1_discover` |
+| Explore schema / confirm fields | `sap_b1_discover` (`action: "list_entity_sets" \| "describe" \| "search"`) |
 | Read a document (Orders, Invoices, Quotations, DeliveryNotes, PurchaseOrders) | `sap_b1_get_document` |
 | Generic OData read of any entity set | `sap_b1_sl_query` |
 | Create / update / delete via Service Layer | `sap_b1_sl_write` (POST / PATCH / DELETE) |
 | Create a draft document | `sap_b1_create_draft` (needs `DocObjectCode`) |
-| Get an upload token for a chat file | `sap_b1_prepare_upload` (then multipart POST upload — see reference.md) |
+| Get an upload token for a chat file | `sap_b1_prepare_upload` |
 | Attach a host/Base64 file to a record | `sap_b1_attach_file` |
 | Raw read-only SQL (when enabled) | `sap_b1_sql_query` |
-| Look up SAP table/field docs | `sap_b1_sql_reference` |
+| Look up SAP table/field docs before composing SQL | `sap_b1_sql_reference` (e.g. `table: "OINV"`) |
 
-## Tool availability varies
+The server gates tools per deployment: a restricted one may expose only `sap_b1_get_document`, and
+the SQL tools exist only when a SQL dialect is configured. Use raw Service Layer names (entity sets,
+field names, OData options) — this MCP mirrors the Service Layer rather than inventing its own
+vocabulary.
 
-**First, load the tools — then judge what's available.** Some hosts defer tool schemas: the
-`sap_b1_*` tools are listed by name only and can't be called until loaded. A tool you "can't see"
-in that state is unloaded, not absent. Load the whole set in one call
-(`ToolSearch query="sap_b1"`) before concluding a capability is missing — otherwise it's easy to
-tell the user their deployment is read-only when the write tools were there all along.
+## Task skills
 
-Once they're loaded, the real gating applies. The server gates tools with JSON capabilities. A
-restricted deployment may expose only `sap_b1_get_document`; SQL tools exist only when the server
-has a SQL dialect configured. If a tool you expected is missing, fall back: use `sap_b1_sl_query`
-when `sap_b1_sql_query` is unavailable, and read documents you cannot write. Do not assume a tool
-is present — if a needed capability is missing, tell the user what to enable.
-
-## Working style
-
-- Read before you write. Confirm the entity shape with `sap_b1_discover`, then act.
-- Prefer **drafts** for anything financial: create with `sap_b1_create_draft`, show the user the
-  compact receipt, and only add/post the real document after they confirm.
-- **Settle attachment intent up front.** If a file is in the conversation (PDF, receipt, email,
-  image) and you're about to create or find a record, ask with `AskUserQuestion` whether it should
-  be attached **before** writing — not after the record exists. See the attachment section in
-  `reference.md`.
-- Use raw Service Layer names (entity sets, field names, OData options) — this MCP intentionally
-  mirrors Service Layer rather than inventing a friendlier vocabulary.
-
-## Rendering output
-
-Render structural output through the `mcp__visualize__show_widget` tool, not markdown prose. These
-tools ship in normal chat and Cowork sessions — reach for them by default; don't wait to confirm
-they're available. Call `mcp__visualize__read_me` once before your first `show_widget` call, then
-match the widget to the output:
-
-- Capability tour or list of options → card grid.
-- A single balance, aging summary, or document status → data-record card or metric cards.
-- A draft document awaiting confirmation (invoice, credit memo, payment, journal entry) →
-  data-record card styled as a receipt.
-- Multi-row lists (open invoices, service call queue, PO lines) → keep as markdown tables, never
-  widgets; the design system reserves tables for text.
-
-This applies whether the turn is a live chat reply, a scheduled task, or an internal
-verification/test pass — don't downgrade to prose because the turn feels programmatic rather
-than conversational.
-
-**Foreign-currency documents carry both amounts, each labelled.** Put the transaction currency on
-the lines (what the partner is billed — `1.000,00 EUR`), the local-currency total with its code
-(`7.460,00 DKK`), and the document's exchange rate. Never render a bare number that could be read
-as either. Report the values SAP returned on the created document — don't compute or predict them.
-
-Only if `show_widget` is genuinely absent (a restricted deployment) fall back to plain prose, and
-don't mention the widget system.
-
-See `reference.md` in this skill for entity/DocObjectCode maps, the object-type / copy-from-base
-recipe, the draft-first finalize rule, and file-attachment steps. The task skills cover specific
-workflows:
+Hand off to the matching skill when the request is one of these:
 
 - `sap-b1-lookups` — read-only balances, aging, and document status.
 - `sap-b1-invoices` — AR/AP invoices (item and service lines).
@@ -120,3 +81,11 @@ workflows:
 - `sap-b1-master-data` — create/maintain business partners and items.
 - `sap-b1-messages` — send internal SAP B1 messages/alerts to users, named recipients, or a department.
 - `sap-b1-live-artifacts` — build a persisted, refreshable Cowork dashboard backed by live SAP B1 data.
+
+## Reference
+
+[reference.md](reference.md) holds the tenant-invariant tables and recipes: entity sets,
+DocObjectCodes, item vs service line shapes and reading `DocType`, the VAT note, object types,
+copy-from-base, draft finalize, the file-upload flow, live-lookup recipes for G/L accounts and tax
+groups, and cardinality/safety rules. Read the section you need when a request goes beyond the task
+skills.

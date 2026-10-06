@@ -7,7 +7,10 @@ See [AGENTS.md](../AGENTS.md) for the full guidance. In short:
   project not in this repo**.
 - The core invariant is **discovery-first**: skills never hardcode account numbers, tax codes, or
   item codes — everything tenant-specific is resolved live per company database. Only
-  `skills/sap-b1-overview/reference.md` holds tenant-invariant facts.
+  tenant-invariant facts (object types, entity names) are written down.
+- **Skills are self-contained**: none relies on another being loaded. Rules every skill needs sit
+  in a marked shared block (`<!-- core-rules -->`, `<!-- attach-files -->`) copied verbatim into
+  each `SKILL.md`; `scripts/check.sh` fails on drift between copies.
 - **This repo is public.** Debugging happens against live company databases, so keep tenant data
   out of skills, commits, and PR/issue bodies alike: no company or customer names, `CardCode`s,
   G/L accounts, tax or item codes, server URLs, or credentials — and avoid real document numbers

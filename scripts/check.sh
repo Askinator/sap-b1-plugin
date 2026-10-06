@@ -12,7 +12,8 @@
 #      carries none, so there is nothing to cross-check).
 #   2. Every skills/*/ dir is referenced in README.md and AGENTS.md, and every
 #      task skill (all but sap-b1-getting-started / sap-b1-overview) is listed
-#      in the overview skill index (skills/sap-b1-overview/SKILL.md).
+#      in the overview skill index (skills/sap-b1-overview/SKILL.md) and the
+#      getting-started tour table (skills/sap-b1-getting-started/SKILL.md).
 #   3. Both manifests validate (skipped if the CLI is absent). `validate .`
 #      resolves to marketplace.json only, so the plugin manifest is validated
 #      by explicit path — otherwise plugin.json is never checked at all.
@@ -22,6 +23,11 @@
 #      documentationUrl, supportUrl, privacyPolicyUrl, termsOfServiceUrl): the
 #      plugin directory wants them in plugin.json, but the CLI schema doesn't
 #      know them yet.
+#   4. Shared skill blocks stay identical. Skills can't count on another skill
+#      being loaded, so rules every skill needs are copied into each one between
+#      `<!-- name ... -->` / `<!-- /name -->` markers. Every SKILL.md must carry
+#      the core-rules block, every copy of a block must match byte for byte, and
+#      no skill may point into another skill's files (sap-b1-overview/...).
 #
 # Exits non-zero on any failure so CI / a pre-commit hook can block the drift.
 
@@ -48,10 +54,39 @@ for dir in skills/*/; do
   case "$skill" in
     sap-b1-getting-started|sap-b1-overview) ;;  # not part of the task-skill index
     *) grep -q "$skill" skills/sap-b1-overview/SKILL.md \
-         || err "$skill not listed in overview skill index (skills/sap-b1-overview/SKILL.md)" ;;
+         || err "$skill not listed in overview skill index (skills/sap-b1-overview/SKILL.md)"
+       grep -q "$skill" skills/sap-b1-getting-started/SKILL.md \
+         || err "$skill not listed in getting-started tour (skills/sap-b1-getting-started/SKILL.md)" ;;
   esac
 done
-[ "$fail" -eq 0 ] && ok "all skills referenced in README, AGENTS, and the overview index"
+[ "$fail" -eq 0 ] && ok "all skills referenced in README, AGENTS, the overview index, and the getting-started tour"
+
+# --- 4. shared skill blocks are identical ------------------------------------
+echo "Shared skill blocks:"
+block_fail=0
+block() { sed -n "/^<!-- $1[: ]/,/^<!-- \/$1 -->/p" "$2"; }
+for name in core-rules attach-files; do
+  ref="" ref_sum=""
+  for f in skills/*/SKILL.md; do
+    body=$(block "$name" "$f")
+    if [ -z "$body" ]; then
+      [ "$name" = core-rules ] && { err "$f has no $name block"; block_fail=1; }
+      continue
+    fi
+    sum=$(printf '%s' "$body" | cksum)
+    if [ -z "$ref" ]; then ref=$f ref_sum=$sum
+    elif [ "$sum" != "$ref_sum" ]; then
+      err "$name block in $f differs from $ref"; block_fail=1
+    fi
+  done
+done
+for f in skills/*/SKILL.md; do
+  case "$f" in skills/sap-b1-overview/*) continue ;; esac
+  if grep -q 'sap-b1-overview/' "$f"; then
+    err "$f points into sap-b1-overview/ — copy what it needs into the skill instead"; block_fail=1
+  fi
+done
+[ "$block_fail" -eq 0 ] && ok "core-rules in every skill; shared blocks identical; no cross-skill file pointers"
 
 # --- 3. manifest validation (best effort) ------------------------------------
 echo "Manifest validation:"

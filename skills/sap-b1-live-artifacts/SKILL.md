@@ -1,6 +1,6 @@
 ---
 name: sap-b1-live-artifacts
-description: "Build a persisted, refreshable Cowork artifact (a live dashboard page) backed by live SAP Business One data via the Service Layer MCP, for views that don't exist as a single native SAP B1 screen — cross-entity joins (e.g. a customer health board combining AR aging, open service calls, and last order date), aggregate or trend visuals that SAP's grid-based reports don't show at a glance, or any report the user wants to check again later instead of re-asking in chat. Use whenever the user asks for a \"dashboard\", \"board\", \"tracker\", \"live view\", \"page I can check every morning\", says something \"isn't available in SAP\" and wants it visualized, or wants to turn a recurring report into something refreshable. Also triggers on Danish requests like \"et dashboard for mine sager\" or \"en oversigt jeg kan tjekke hver dag\". Requires the mcp__cowork__create_artifact tool. Not for one-off answers that belong in chat — those stay with sap-b1-lookups."
+description: "Builds a persisted, refreshable Cowork artifact (a live dashboard page) backed by live SAP Business One data via the Service Layer MCP, for views that don't exist as a single native SAP B1 screen — cross-entity joins (e.g. a customer health board combining AR aging, open service calls, and last order date), aggregate or trend visuals that SAP's grid-based reports don't show at a glance, or any report the user wants to check again later instead of re-asking in chat. Use whenever the user asks for a \"dashboard\", \"board\", \"tracker\", \"live view\", \"page I can check every morning\", says something \"isn't available in SAP\" and wants it visualized, or wants to turn a recurring report into something refreshable. Also triggers on Danish requests like \"et dashboard for mine sager\" or \"en oversigt jeg kan tjekke hver dag\". Requires the mcp__cowork__create_artifact tool. Not for one-off answers that belong in chat — those stay with sap-b1-lookups."
 ---
 
 # SAP B1 — live artifacts
@@ -10,9 +10,46 @@ Build a persisted, refreshable dashboard page backed by live SAP Business One da
 them — it's for when the value comes from turning a read into something the user reopens later,
 or from joining data that SAP keeps on separate screens.
 
-**Read `sap-b1-overview` before your first tool call** — it carries the discovery-first rule and
-the tool-availability fallbacks that apply here. Its rendering policy governs *chat* output; the
-artifact itself is built to this skill's own guidance below.
+<!-- core-rules: identical in every SAP B1 skill; scripts/check.sh enforces it -->
+## Core rules
+
+- **Load the tools before judging what's there.** If the `sap_b1_*` tools are listed by name only,
+  load them all with one `ToolSearch` (`query: "sap_b1"`) before telling the user a capability is
+  missing. Once loaded, a missing tool is real gating: fall back (`sap_b1_sl_query` when
+  `sap_b1_sql_query` is absent; read what you can't write) and tell the user what to enable.
+- **Resolve every tenant code live.** Each company DB has its own chart of accounts, VAT groups,
+  items, partners, and users. Look codes up against the connected DB — G/L accounts in
+  `ChartOfAccounts` (field `Name`; SQL table `OACT`), tax groups via
+  `sap_b1_discover action="search" query="Tax"` — never from memory or another company. If a code
+  won't resolve, stop and ask; if a name matches several records, show them and ask which one.
+- **Resolve once, in one round trip.** Reuse codes and entity descriptions already resolved this
+  session. Run `describe` only when unsure of a field or after a call failed. Issue independent
+  lookups as parallel calls, or as one `sap_b1_sql_query` when SQL is enabled.
+- **Confirm before anything financial posts.** For invoices, credit memos, payments, journal
+  entries, and sales/purchasing documents, show a confirmation receipt and post only after the
+  user says yes. Other writes follow this skill's own steps. Use
+  `sap_b1_create_draft` only when the user wants a draft left in SAP; then either they approve it
+  in SAP, or you post the real document and remove the draft with
+  `sap_b1_sl_write method="DELETE" path="Drafts(<DraftEntry>)"` — never leave a draft beside the
+  posted document. A draft skips mandatory-field checks, so give it every field the real document
+  needs.
+- **Settle attachment intent up front.** If a file (PDF, receipt, email, image) is in the
+  conversation and you will create or find a record, ask with `AskUserQuestion` whether to attach
+  it — in the same turn as the receipt, not after the record exists. If the user already said,
+  don't ask again.
+- **Render chat output as widgets** — in scheduled and test runs too. Call
+  `mcp__visualize__read_me` once, then `mcp__visualize__show_widget`: a confirmation receipt or a
+  single balance/status as a data-record card, a set of options as a card grid. Multi-row lists
+  stay markdown tables. Only if `show_widget` is absent, fall back to prose without mentioning it.
+- **Every amount carries its currency code.** Balances are in the company's local currency —
+  resolve its code live (`OADM.MainCurncy` via `sap_b1_sql_query`); without SQL, say the amount
+  is in local currency rather than guess a code. On a foreign-currency document, show the lines in
+  the document currency, the local total with its code, and the exchange rate — as SAP returned
+  them, not computed.
+<!-- /core-rules -->
+
+The rendering rule above governs *chat* output; the artifact itself is built to this skill's own
+guidance below.
 
 ## Is an artifact actually the right tool here?
 
@@ -125,8 +162,8 @@ and verified this session — nothing untested.
 
 Keep writes out of the artifact itself. An unattended dashboard that can silently post or modify
 SAP records is a bad pattern — if the view surfaces something actionable ("this invoice needs a
-reminder"), let the user come back to chat and act on it there with the normal draft-first flow
-from the other SAP B1 skills, rather than embedding a write button in the artifact.
+reminder"), let the user come back to chat and act on it there with the normal confirm-before-posting
+flow from the other SAP B1 skills, rather than embedding a write button in the artifact.
 
 ## Test before handing off
 
