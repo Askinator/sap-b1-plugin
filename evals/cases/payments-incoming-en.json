@@ -1,0 +1,19 @@
+{
+  "name": "payments-incoming-en",
+  "query": "{payment_customer} paid invoice {payment_docnum} in full by bank transfer today. Register the payment.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-payments"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query",
+    "sap_b1_get_document"
+  ],
+  "expected_behavior": [
+    "Looks the invoice up by the DocNum the user gave before proposing the payment",
+    "The proposed incoming payment is applied to that invoice for its full open amount (as shown in the receipt)",
+    "Resolves the bank G/L account for TransferAccount live, or asks the user which bank account when it is unclear",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting"
+  ]
+}

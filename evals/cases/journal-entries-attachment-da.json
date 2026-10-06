@@ -1,0 +1,23 @@
+{
+  "name": "journal-entries-attachment-da",
+  "query": "Bogfør kvitteringen i kvittering.pdf.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-journal-entries"
+  ],
+  "fixtures": [
+    "kvittering.pdf"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Reads kvittering.pdf and takes the amount (500 kr. incl. 100 kr. VAT), the expense type, and the card payment from it",
+    "Looks up the expense and card/bank accounts in the chart of accounts instead of using account numbers from memory",
+    "Proposes a balanced entry for the receipt's 500 kr. total (with or without a separate VAT line)",
+    "Asks whether to attach the PDF to the entry in the same turn as the confirmation receipt (an AskUserQuestion attempt or a question in the text), not after the entry exists",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting",
+    "Replies in Danish"
+  ]
+}

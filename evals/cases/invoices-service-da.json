@@ -1,0 +1,19 @@
+{
+  "name": "invoices-service-da",
+  "query": "Lav en faktura til {service_customer} på 3 timers konsulentbistand à 950 kr.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-invoices"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Bills the hours either as a service-type line on a revenue G/L account (DocType dDocument_Service) or on an existing labour/service item resolved live, and says which it chose or asks the user",
+    "Resolves the customer, and the revenue account or item it bills on, from live data; asks when several fit; never invents an account number or item code",
+    "Computes the line total as 2850 (3 x 950) before VAT",
+    "Stops before posting: shows a confirmation receipt and asks to confirm, or first asks for a choice it could not resolve (account or item); never posts with a guessed account",
+    "Replies in Danish"
+  ]
+}

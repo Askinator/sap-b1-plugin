@@ -1,0 +1,25 @@
+{
+  "name": "messages-department-en",
+  "query": "Send a SAP message to everyone in the {department_name} department: stock count on Friday at 9.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-messages"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Resolves the department and its member users (UserCodes) from live data",
+    "Lists the resolved recipients and the text, and stops to ask the user to confirm before sending",
+    "The proposed message goes to every resolved member as an internal SAP message, with no email fan-out since the user didn't ask for one",
+    "Does not invent UserCodes or treat an authorization UserGroup as the department"
+  ],
+  "must_not_call": [
+    "sap_b1_sl_write",
+    "sap_b1_create_draft",
+    "sap_b1_attach_file",
+    "sap_b1_prepare_upload",
+    "send_email_notification"
+  ]
+}

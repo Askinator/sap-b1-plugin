@@ -1,0 +1,20 @@
+{
+  "name": "sales-partial-delivery-en",
+  "query": "Deliver 5 x {partial_order_item} from sales order {partial_order_docnum} now; the rest of the order ships later.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-sales-process"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query",
+    "sap_b1_get_document"
+  ],
+  "expected_behavior": [
+    "Looks the order up by the DocNum the user quoted",
+    "The proposed delivery is copied from the order — the receipt references the base order and its line rather than presenting hand-typed lines",
+    "The delivery contains only the requested item, with quantity 5, and none of the order's other lines",
+    "Says or implies the order stays open for the remaining quantities",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "purchasing-po-en",
+  "query": "Raise a purchase order to {vendor_name} for 10 x {purchase_item}.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-purchasing"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Resolves the vendor's CardCode (a supplier) and the ItemCode with live queries",
+    "The proposed purchase order (as shown in the receipt) has the resolved item with quantity 10",
+    "States the DocDueDate (required-by date) it intends to use, or asks for it",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting",
+    "The receipt shows a unit price and line total with a currency code, or says the vendor has no price for the item and asks for one"
+  ]
+}

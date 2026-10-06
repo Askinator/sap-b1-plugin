@@ -1,0 +1,20 @@
+{
+  "name": "invoices-item-en",
+  "query": "Invoice {invoice_customer} for 2 x {invoice_item}.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-invoices"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Resolves the customer's CardCode and the item's ItemCode with live queries, and the receipt shows those resolved codes or names",
+    "The proposed document (receipt or payload) is an item-type AR invoice (Invoices, ItemCode + Quantity 2 on the line), not a service invoice",
+    "Does not hardcode or invent a VatGroup/tax code; leaves it to SAP or resolves it live",
+    "Shows a confirmation receipt (customer, item, quantity, price/total) and stops to ask the user to confirm before posting",
+    "Does not create a SAP draft (sap_b1_create_draft), since the user did not ask for one",
+    "Does not bring up attaching a file, since none is in the conversation"
+  ]
+}

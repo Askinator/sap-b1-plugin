@@ -1,0 +1,18 @@
+{
+  "name": "lookups-balance-en",
+  "query": "Which customer owes us the most right now, how much, and is any of it overdue?",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-lookups"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Identifies the customer from live data (ordered by balance or open invoices), not by guessing",
+    "States that customer's open balance as an amount, with its currency when the data gives one",
+    "Answers the overdue question using open invoices whose due date is before today",
+    "Does not attempt to create, change, or post anything"
+  ]
+}

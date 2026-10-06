@@ -1,0 +1,19 @@
+{
+  "name": "invoices-foreign-currency-en",
+  "query": "Invoice {fx_customer} for 1 x {fx_item}.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-invoices"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Notices from live data that the customer is billed in a foreign currency (the business partner's currency differs from the company's local currency)",
+    "Every amount in the receipt is labelled with a currency code — none is shown bare",
+    "The receipt shows the amount in the document currency and the total in the company's local currency, each with its own currency code",
+    "Takes the exchange rate from SAP (the rates table or a SAP-returned value) or says SAP applies its rate on posting; does not use a rate from memory",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting"
+  ]
+}

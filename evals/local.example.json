@@ -1,0 +1,19 @@
+{
+  "invoice_customer": "<name of an existing customer>",
+  "invoice_item": "<name of an item that customer has bought>",
+  "service_customer": "<name of an existing customer>",
+  "payment_customer": "<customer owning the invoice below>",
+  "payment_docnum": "<DocNum of an open, unpaid AR invoice>",
+  "order_docnum": "<DocNum of an open sales order>",
+  "vendor_name": "<name of an existing vendor>",
+  "purchase_item": "<item bought from that vendor before>",
+  "credit_docnum": "<DocNum of a posted AR invoice>",
+  "department_name": "<department with at least one user>",
+  "partial_order_docnum": "<DocNum of an open sales order with several lines, each open quantity >= 2>",
+  "partial_order_item": "<item on one line of that order, open quantity >= 6, in stock>",
+  "credit_item": "<item on a line of credit_docnum with quantity >= 2>",
+  "fx_customer": "<customer whose BP currency is foreign, with today's exchange rate entered>",
+  "fx_item": "<item that customer has bought>",
+  "message_user": "<full name of one user that matches no other user>",
+  "digest_department": "<department with at least one user, other than department_name>"
+}

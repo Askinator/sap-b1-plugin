@@ -3,8 +3,9 @@
 See [AGENTS.md](../AGENTS.md) for the full guidance. In short:
 
 - This is a **Claude plugin** (manifest + markdown skills) shipped to Claude Desktop, **not** an
-  application — no build, test, lint, or runtime. The SAP B1 MCP **server is a separate, hosted
-  project not in this repo**.
+  application — no build, lint, or runtime. The SAP B1 MCP **server is a separate, hosted
+  project not in this repo**. Skill evals live in `evals/` and run locally against a live company
+  DB with writes blocked — see `evals/README.md`; rerun affected cases after changing a skill.
 - The core invariant is **discovery-first**: skills never hardcode account numbers, tax codes, or
   item codes — everything tenant-specific is resolved live per company database. Only
   tenant-invariant facts (object types, entity names) are written down.

@@ -1,0 +1,20 @@
+{
+  "name": "credit-memos-cancel-da",
+  "query": "Annuller faktura {credit_docnum} – kunden har sendt alle varerne retur.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-credit-memos"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query",
+    "sap_b1_get_document"
+  ],
+  "expected_behavior": [
+    "Explains or applies that a posted invoice is reversed with a credit memo, not deleted",
+    "Looks the invoice up by the DocNum the user gave, and the proposed credit memo (CreditNotes) is copied from that invoice — the receipt references the source invoice rather than listing hand-typed lines",
+    "Does not propose a DELETE or a hand-built standalone credit when the source invoice exists",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting",
+    "Replies in Danish"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "lookups-overdue-da",
+  "query": "Hvilke kundefakturaer er forfaldne lige nu? Vis de fem ældste.",
+  "needs_sap": true,
+  "expect_skills": ["sap-b1-lookups"],
+  "must_call_any": ["sap_b1_sl_query", "sap_b1_sql_query"],
+  "expected_behavior": [
+    "Filters AR invoices (Invoices / OINV) on open status and a due date before today, rather than listing all invoices",
+    "Answers with at most five invoices, oldest due date first, as a compact table",
+    "Replies in Danish",
+    "Does not attempt to create, change, or post anything"
+  ]
+}

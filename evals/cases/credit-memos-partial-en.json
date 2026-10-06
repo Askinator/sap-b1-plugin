@@ -1,0 +1,19 @@
+{
+  "name": "credit-memos-partial-en",
+  "query": "The customer on invoice {credit_docnum} returned 1 x {credit_item}. Credit just that.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-credit-memos"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query",
+    "sap_b1_get_document"
+  ],
+  "expected_behavior": [
+    "Looks the invoice up by the DocNum the user gave",
+    "The proposed credit memo (CreditNotes) is copied from that invoice — the receipt references the source invoice and its line",
+    "Credits only the returned item with quantity 1, and none of the invoice's other lines or quantities",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting"
+  ]
+}
