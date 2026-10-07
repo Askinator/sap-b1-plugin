@@ -28,6 +28,13 @@
 #      `<!-- name ... -->` / `<!-- /name -->` markers. Every SKILL.md must carry
 #      the core-rules block, every copy of a block must match byte for byte, and
 #      no skill may point into another skill's files (sap-b1-overview/...).
+#   5. Every skill's frontmatter description carries Danish trigger terms,
+#      marked by the word "Danish" (e.g. "Also triggers on Danish requests:
+#      kreditnota, ..."). Triggering keys off the description, and Danish
+#      support lives there rather than in translated skill files — see
+#      issue #5 and the localization decision in AGENTS.md. This catches a new
+#      skill shipped without them; whether the terms match real users'
+#      phrasing still needs a human.
 #
 # Exits non-zero on any failure so CI / a pre-commit hook can block the drift.
 
@@ -87,6 +94,19 @@ for f in skills/*/SKILL.md; do
   fi
 done
 [ "$block_fail" -eq 0 ] && ok "core-rules in every skill; shared blocks identical; no cross-skill file pointers"
+
+# --- 5. every skill description carries Danish trigger terms -----------------
+echo "Danish trigger terms:"
+da_fail=0
+for f in skills/*/SKILL.md; do
+  desc=$(awk '/^---$/{n++; next} n==1 && /^description:/' "$f")
+  case "$desc" in
+    '') err "$f has no single-line frontmatter description"; da_fail=1 ;;
+    *Danish*) ;;
+    *) err "$f description has no Danish trigger terms — add 'Also triggers on Danish requests: …' (issue #5)"; da_fail=1 ;;
+  esac
+done
+[ "$da_fail" -eq 0 ] && ok "every skill description names its Danish trigger terms"
 
 # --- 3. manifest validation (best effort) ------------------------------------
 echo "Manifest validation:"
