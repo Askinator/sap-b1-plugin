@@ -100,11 +100,11 @@ echo "Danish trigger terms:"
 da_fail=0
 for f in skills/*/SKILL.md; do
   desc=$(awk '/^---$/{n++; next} n==1 && /^description:/' "$f")
-  if [ -z "$desc" ]; then
-    err "$f has no frontmatter description"; da_fail=1
-  elif ! printf '%s' "$desc" | grep -q 'Danish'; then
-    err "$f description has no Danish trigger terms — add 'Also triggers on Danish requests: …' (issue #5)"; da_fail=1
-  fi
+  case "$desc" in
+    '') err "$f has no single-line frontmatter description"; da_fail=1 ;;
+    *Danish*) ;;
+    *) err "$f description has no Danish trigger terms — add 'Also triggers on Danish requests: …' (issue #5)"; da_fail=1 ;;
+  esac
 done
 [ "$da_fail" -eq 0 ] && ok "every skill description names its Danish trigger terms"
 

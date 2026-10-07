@@ -126,7 +126,7 @@ a skill, include Danish trigger terms in the description from the first draft. S
 
 `scripts/check.sh` enforces this: every description must name its Danish terms with the word
 "Danish" — `Also triggers on Danish requests: …`, or `(Danish: …)` next to the English term. It
-only checks that terms are present; the current terms are best guesses, so revise them as real
+only checks for that marker, not the terms behind it; the current terms are best guesses, so revise them as real
 Danish users' phrasing comes in. A skill that needs different *behaviour* for a locale (e.g.
 Danish VAT reporting rules) is its own issue, not a description edit.
 
@@ -135,7 +135,7 @@ Danish VAT reporting rules) is its own issue, not a description edit.
 There is no build. The operations that exist:
 
 ```bash
-# Consistency check: skill-index coverage, shared-block drift, manifest validation
+# Consistency check: skill-index coverage, shared-block drift, Danish trigger terms, manifest validation
 scripts/check.sh
 
 # Validate the plugin manifest + skills (run from repo root)
