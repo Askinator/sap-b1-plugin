@@ -121,16 +121,30 @@ To make the final invoice, hand off to `sap-b1-invoices` and copy from the deliv
 
 When the user said to attach, do it right after the record exists:
 
-1. `sap_b1_prepare_upload` (no args) → `{ token, uploadUrl }`.
+1. `sap_b1_prepare_upload` with `targetEntity` (the entity set, e.g. `PurchaseInvoices`) and
+   `targetKey` (the record's key — a number for `DocEntry`-style keys, a string for `CardCode`)
+   → `{ token, uploadUrl }`. The target is bound into the token.
 2. Upload the file as an HTTP `POST` to `uploadUrl` with `multipart/form-data`: header
-   `x-upload-token: <token>`, form fields `file` (the file, with its MIME type), `entity` (the
-   entity set, e.g. `PurchaseInvoices`), and `key` (the record's key).
-3. If the response has `"attached": false`, link it yourself:
-   `sap_b1_sl_write method="PATCH" path="<EntitySet>(<key>)" body={ "AttachmentEntry": <n> }`.
+   `x-upload-token: <token>` and **only** the form field `file` (the file, with its MIME type).
+   Any other field (`entity`, `key`, `fileName`, …) is rejected with 400. The token is single-use
+   and spent by any attempt, so every retry starts again at step 1.
+3. A 200 returns `attachmentEntry`; the file joins the record's existing attachment entry, if it
+   has one. If `renamedFrom` is present, the name was taken in SAP's attachment folder and the
+   file was stored as `uploadedFile.fileName` — tell the user the stored name.
 
-For a file the SAP/MCP host can already read, or Base64 in memory, `sap_b1_attach_file` does it in
-one call (`mode` `server_path` / `multipart` / `base64`, optional `target`). Report the record and
-the attachment together ("invoice posted, `bilag.pdf` attached").
+Errors answer `{ error, detail }`: 400 bad input, 401 token missing/used/expired, 409 name clash
+(rename the file, new token), 422 SAP rejected it, 503 SAP unreachable. Show `detail` to the user;
+never report a failed upload as attached. If a response has `attachmentEntry` with
+`"attached": false`, don't re-upload — link it:
+`sap_b1_sl_write method="PATCH" path="<EntitySet>(<key>)" body={ "AttachmentEntry": <n> }`.
+
+`sap_b1_attach_file` (same `targetEntity`/`targetKey`) takes a file without the upload step:
+`mode="base64"` with `base64Content` + `fileNameWithExtension`, or `mode="server_path"` with
+`sourcePath` (a folder the SAP server reads), `fileName` (no extension), `fileExtension` (no dot).
+Its `multipart` mode reads a path on the MCP host, which can't see chat uploads. If the file already
+sits in such a folder — e.g. an earlier attempt stored it in SAP's attachment folder — attach it
+with `server_path` instead of uploading again (from that folder, the records share one physical
+file). Report the record and the attachment together ("invoice posted, `bilag.pdf` attached").
 <!-- /attach-files -->
 
 ## Notes

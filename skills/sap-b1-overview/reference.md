@@ -182,17 +182,60 @@ don't re-ask.
 
 Two-step, because the MCP host usually can't see Claude's upload sandbox:
 
-1. `sap_b1_prepare_upload` (no args) → returns `{ token, uploadUrl }`.
+1. `sap_b1_prepare_upload` with top-level `targetEntity` and `targetKey` (both or neither):
+   - `targetEntity` — the entity set (e.g. `PurchaseInvoices`, `Drafts`)
+   - `targetKey` — a number for numeric keys (`DocEntry`), a string for keys like `CardCode`
+
+   Returns `{ token, expiresInSeconds, uploadUrl, targetEntity, targetKey }`. The target is bound
+   into the token — this is the only place to set it. The token lives 300 seconds.
 2. Upload the local file as an HTTP `POST` to `uploadUrl` with `multipart/form-data`:
    - header `x-upload-token: <token>`
-   - form field `file` — the local file, with its MIME type
-   - form field `entity` — the target entity set (e.g. `PurchaseInvoices`)
-   - form field `key` — the target record's key value
-3. If the response has `"attached": false`, link it manually:
-   `sap_b1_sl_write method="PATCH" path="<EntitySet>(<key>)" body={ "AttachmentEntry": <n> }`.
+   - form field `file` — the local file, with its MIME type — and **no other field**. `entity`,
+     `key`, `targetEntity`, `targetKey`, `fileName`, `fileExtension` are rejected with 400.
 
-For a file already readable by the SAP/MCP host (or in-memory Base64), `sap_b1_attach_file` handles
-it directly with `mode` `server_path` / `multipart` / `base64` and an optional `target` to link it.
+   The token is single-use and consumed by any attempt, success or failure; every retry needs a
+   fresh `sap_b1_prepare_upload`.
+3. A 200 returns `{ attachmentEntry, attached, targetPath?, renamedFrom?, uploadedFile }`. If the
+   target already has an `AttachmentEntry`, the file is appended to that `Attachments2` entry;
+   otherwise a new entry is created and linked.
+
+**Renames.** If the name is already taken in SAP's attachment folder, the server stores the file
+under a suffixed name (`bilag.pdf` → `bilag_1.pdf`, `bilag_2.pdf`, …) and returns `renamedFrom`
+with the original. When it is present, tell the user the stored name (`uploadedFile.fileName`).
+
+**Errors** answer `{ error, detail }` with SAP's message in `detail` — always show it, and never
+report a failed upload as attached:
+
+| Status | Meaning |
+| --- | --- |
+| 400 | Invalid input (e.g. an extra form field) |
+| 401 | Token missing, already used, or expired |
+| 409 | Name still taken after 10 suffixes — rename the file and retry with a new token |
+| 422 | SAP rejected the request |
+| 503 | SAP unreachable |
+
+If the attachment was created but linking failed, the 422 body also carries `attachmentEntry` and
+`"attached": false`; the same holds for a 200 from an upload without a target. Don't re-upload —
+link it: `sap_b1_sl_write method="PATCH" path="<EntitySet>(<key>)" body={ "AttachmentEntry": <n> }`.
+
+### `sap_b1_attach_file`
+
+One call, for a file that needs no upload step. Inputs: `mode`, plus the same optional top-level
+`targetEntity` + `targetKey` (together).
+
+| `mode` | Needs |
+| --- | --- |
+| `server_path` | `sourcePath` (a folder the SAP server can read), `fileName` (no extension), `fileExtension` (no dot); `override` (default `true`, honored only in this mode) |
+| `base64` | `base64Content`, `fileNameWithExtension` |
+| `multipart` | `localFilePath` on the MCP host — which usually can't see Claude's sandbox paths (e.g. `/mnt/user-data/uploads`), so use the upload flow for chat files |
+
+`base64` and `multipart` rename on a name clash like the upload (`renamedFrom`).
+
+**Recovery without re-uploading.** When the file already sits in a folder the SAP server reads —
+including SAP's own attachment folder, because an earlier attempt stored it there, or a share the
+user put it on — attach it with `mode="server_path"`, its folder as `sourcePath`, and the target.
+If that folder is SAP's attachment folder itself, the new record references the same physical file
+as any record already linked to it.
 
 ## Live-lookup recipes
 
