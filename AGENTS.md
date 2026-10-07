@@ -124,6 +124,12 @@ frontmatter. So Danish support lives as **Danish trigger terms inside each skill
 a skill, include Danish trigger terms in the description from the first draft. See
 [issue #5](https://github.com/Askinator/sap-b1-plugin/issues/5) for the rationale.
 
+`scripts/check.sh` enforces this: every description must name its Danish terms with the word
+"Danish" — `Also triggers on Danish requests: …`, or `(Danish: …)` next to the English term. It
+only checks that terms are present; the current terms are best guesses, so revise them as real
+Danish users' phrasing comes in. A skill that needs different *behaviour* for a locale (e.g.
+Danish VAT reporting rules) is its own issue, not a description edit.
+
 ## Common operations
 
 There is no build. The operations that exist:
