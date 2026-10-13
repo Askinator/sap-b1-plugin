@@ -106,8 +106,9 @@ Both branches read SAP the same way: **one `sap_b1_sql_query` per view**, joins 
 in SQL, never per-row fan-out — every viewer's page repeats each call on every open.
 
 - **Run every query for real in chat first** and store the arguments that worked, unchanged.
-  Confirm column names with `sap_b1_sql_reference`, or a `TOP 1` / `LIMIT 1` probe — raw column
-  names differ from the Service Layer property names.
+  Confirm column names with `sap_b1_sql_reference` first — raw column names differ from the
+  Service Layer property names. If you still need a probe, `TOP 1` / `LIMIT 1` of the columns you
+  name, never `SELECT *`: most tables carry phone numbers, emails, or addresses.
 - **Answer shape:** `{dialect, columns: [{name, type}], rows: [{…}], rowsAffected, truncated}`.
   Integer and numeric columns arrive as JS numbers. Date columns arrive as ISO strings ending in
   `Z`, but SAP dates carry no time zone: take `.slice(0, 10)`, never `new Date(…)`.
@@ -122,6 +123,9 @@ in SQL, never per-row fan-out — every viewer's page repeats each call on every
   account.
 - **Read no personal fields** (contact names, emails, phones) the user didn't ask for. Protected
   fields come back as `"[redacted]"` whatever you select.
+- **Service calls** (`OSCL`): open means `"status" <> -1`. The system statuses `-3` open, `-2`
+  pending, and `-1` closed exist in every company (their names are translated); statuses a
+  company adds are in `OSCS`. `"priority"` is `L`, `M`, or `H`.
 
 Without `sap_b1_sql_query` (the server has no SQL dialect, or the user's role lacks it),
 `sap_b1_sl_query` works, but its answer isn't plain rows and pages at most 100 records per call,
@@ -150,6 +154,26 @@ none of INSERT UPDATE DELETE MERGE DROP ALTER CREATE TRUNCATE GRANT REVOKE CALL 
 COPY EXPORT LOAD INTO RETURNING DECLARE SET BEGIN COMMIT outside quotes and comments —
 double-quote a column so named. Results over about 8 MB are refused.
 
+**Headline totals ride on the rows they total.** The type wants arithmetic over one connector
+in SQL, not in the page — but a second query that recomputes the totals repeats every rule of
+the first (what counts as overdue, at risk, open), and the two drift apart. Add the totals as one
+more row of the same query instead (MSSQL and HANA):
+
+```sql
+SELECT CASE WHEN GROUPING(B."CardCode") = 1 THEN 'total' ELSE 'row' END AS "RowType",
+  B."CardCode",
+  CASE WHEN GROUPING(B."CardCode") = 1 THEN NULL ELSE MAX(B."CardName") END AS "CardName",
+  SUM(B."OpenAR") AS "OpenAR", COUNT(*) AS "Customers"
+FROM (<the per-row query, without ORDER BY>) B
+GROUP BY GROUPING SETS ((B."CardCode"), ())
+ORDER BY GROUPING(B."CardCode") DESC, "OpenAR" DESC
+```
+
+Every other column is an aggregate (over one row it is that row's value); a text column is
+`NULL` on the totals row, or `MAX` hands it some customer's name. The page marks a headline with
+`data-where="RowType=total"` and draws the table from the other rows. The totals row counts
+toward `max_rows`.
+
 **Filters.** `{{name}}` in the SQL fills as one bare SQL literal, and an unset parameter is
 `NULL`, so cast before comparing. Use these instead of the type's BigQuery examples, and don't
 mix `{{name}}` with the tool's own `params`/`:name` binding:
@@ -163,8 +187,10 @@ mix `{{name}}` with the tool's own `params`/`:name` binding:
 - a short option list (a status, a branch): `GROUP BY` the column and pick the rows in `onData`
   instead of adding a parameter.
 
-**Loader (optional).** The type reads `rows` as rows without one. Add this so a cut result shows
-as cut and a failure reads in SAP's own words:
+**Loader (optional).** The type already reads the SQL answer's `rows` as rows; a loader only adds
+that a cut result shows as cut and a failure reads in SAP's own words. Its `fn` may use only its
+own parameters and constants, so with several datasets register it once per dataset id, body
+repeated, rather than through a shared helper:
 
 ```js
 dash.loader('<dataset id>', {
