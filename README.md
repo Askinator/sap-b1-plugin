@@ -11,7 +11,7 @@ talks to your company's Service Layer; you add that server to Claude yourself as
 
 ## Requirements
 
-- **Claude Desktop** (the skills also use Cowork for dashboards and scheduled tasks).
+- **Claude Desktop** (the skills also use Cowork for scheduled tasks, and claude.ai artifacts for dashboards and work-queue pages).
 - **SAP Business One** with the **Service Layer** enabled.
 - An **MCP server** reachable over HTTPS that exposes the `sap_b1_*` tools these skills call:
   `sap_b1_discover`, `sap_b1_get_document`, `sap_b1_sl_query`, `sap_b1_sl_write`,
@@ -63,7 +63,7 @@ Claude picks these up automatically for relevant requests:
 - `sap-b1-service-calls` — support tickets and activity logging.
 - `sap-b1-master-data` — create/maintain business partners and items.
 - `sap-b1-messages` — send internal SAP B1 messages/alerts to users, named recipients, or a department.
-- `sap-b1-live-artifacts` — build a persisted, refreshable Cowork dashboard backed by live SAP B1 data.
+- `sap-b1-live-artifacts` — build a live claude.ai dashboard, or a work-queue page that acts on the records it lists, backed by live SAP B1 data.
 
 ## Use with care
 

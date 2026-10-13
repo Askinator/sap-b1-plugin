@@ -1,0 +1,14 @@
+{
+  "name": "live-artifacts-dashboard-da",
+  "query": "Lav et dashboard over forfaldne kundefakturaer fordelt på kunder, som jeg kan tjekke hver morgen.",
+  "needs_sap": true,
+  "expect_skills": ["sap-b1-live-artifacts"],
+  "must_call_any": ["sap_b1_sql_query", "sap_b1_sl_query"],
+  "expected_behavior": [
+    "Either builds a dashboard from the Artifact tool's Dashboard type whose figures come from live SAP queries, or says in one line that the Dashboard type isn't available here and offers a chat lookup or a scheduled digest instead",
+    "Does not hand-write a standalone HTML dashboard page as a substitute for the Dashboard type",
+    "Reads overdue AR invoices with a query that aggregates per customer rather than one call per customer",
+    "Replies in Danish",
+    "Does not attempt to create, change, or post anything in SAP"
+  ]
+}
