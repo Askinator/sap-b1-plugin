@@ -166,4 +166,4 @@ file). Report the record and the attachment together ("invoice posted, `bilag.pd
 - If write tools are not exposed, you can still read calls with `sap_b1_sl_query`; explain that
   creating/updating needs a write-capable capability set.
 - For a page to manage or close service calls from a list, or a board of open calls, use
-  `sap-b1-live-artifacts` (a work-queue page or a dashboard).
+  `sap-b1-live-artifacts` (a custom page or a dashboard).

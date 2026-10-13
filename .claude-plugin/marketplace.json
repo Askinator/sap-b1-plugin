@@ -8,7 +8,7 @@
     {
       "name": "sap-b1",
       "source": "./",
-      "description": "Workflow skills for a hosted SAP B1 Service Layer MCP server (added as a custom connector) for the sales/purchasing lifecycles, invoices, credit memos, payments, journal entries, service calls, master data, lookups, internal messages, and live dashboards and work-queue pages."
+      "description": "Workflow skills for a hosted SAP B1 Service Layer MCP server (added as a custom connector) for the sales/purchasing lifecycles, invoices, credit memos, payments, journal entries, service calls, master data, lookups, internal messages, and live dashboards and custom pages."
     }
   ]
 }

@@ -104,7 +104,7 @@ needs the write tools enabled server-side.
 | Open or manage a support/service ticket | `sap-b1-service-calls` |
 | Create a new customer, vendor, or item | `sap-b1-master-data` |
 | Send an internal SAP message to a user or department | `sap-b1-messages` |
-| Build a live dashboard, or a work-queue page to act from, over live SAP data | `sap-b1-live-artifacts` |
+| Build a live dashboard, or a custom page (work queue, form, approvals), over live SAP data | `sap-b1-live-artifacts` |
 
 Everything tenant-specific (accounts, VAT groups, item codes) is resolved **live** against the
 connected database — nothing is hardcoded, so the same skills work for any company.
