@@ -237,13 +237,14 @@ sized to what its buttons do:
   page is shared with gets the buttons;
 - the declared tool can do more than the buttons do — `sap_b1_sl_write` can POST, PATCH, or DELETE
   any path — and the page's own code is the only thing narrowing it;
-- deleting is permanent. For a page that deletes, get an explicit yes before building.
+- posting and deleting are permanent. For a page that posts or deletes, get an explicit yes
+  before building.
 
-**Financial documents become drafts.** A page creates invoices, credit memos, payments, journal
-entries, and sales/purchasing documents only as drafts (`sap_b1_create_draft`); posting them
-happens in chat with the other SAP B1 skills, or by approving the draft in SAP. The in-page
-receipt before creating one shows what the core rules require: each line's quantity, unit price,
-and total, and the document total, all with currency codes.
+**Financial documents.** A page that posts invoices, credit memos, payments, journal entries, or
+sales/purchasing documents works as *Posting from a page* below describes. A page that only
+prepares them creates drafts (`sap_b1_create_draft`), posted later in chat or approved in SAP; its
+in-page receipt shows what the core rules require: each line's quantity, unit price, and total,
+and the document total, all with currency codes.
 
 **Manifest.** Declare the minimum —
 `capabilities: {mcp: {servers: [{server: "<pinned display name>", tools: [<only the tools the page calls>]}]}}`
@@ -302,6 +303,51 @@ Render SAP data with `textContent` only: it's untrusted text.
 
 **Verify** by re-running each read query in chat as the page stores it; don't render or browse to
 the page. Say in one line what you exercised and what only the user's first click will.
+
+## Posting from a page (draft preview)
+
+The viewer's Confirm click is their yes, so the in-page receipt must show the amounts SAP will
+post — SAP's own numbers, not an estimate from the price list. Service Layer has no dry run for
+documents, so the page previews through a draft and posts that same draft:
+
+1. **Preview.** `sap_b1_create_draft` with `responseMode: "full"` (the default reply drops every
+   total), and a marker in `Comments` naming the page so it can find its own drafts. The receipt
+   shows each line's `Quantity`, `Price` (after discount), `LineTotal`, and `TaxTotal`, and the
+   header's `VatSum` and `DocTotal` with `DocCurrency`; for a foreign-currency document also
+   `DocRate` and the local total. If the reply lacks lines, read them from `DRF1`.
+2. **Confirm.** Re-read the source (still open, not already invoiced or paid) and the draft, then
+   one `sap_b1_sl_write method="POST" path="DraftsService_SaveDraftToDocument"` with
+   `body: {Document: {DocEntry: <draft>}}` — it posts exactly the previewed draft. Then find the
+   posted document by its `draftKey`, show its key and totals, and if the draft is still there,
+   delete it so it doesn't sit beside the posted document.
+3. **Cancel** deletes the draft (`DELETE Drafts(<n>)`).
+4. **Leftovers.** On load, list the open drafts carrying the page's marker with a Discard button —
+   a closed tab or a dropped connection between preview and Confirm leaves one behind.
+5. **Approvals.** Where the company runs approval procedures, Confirm can leave the document
+   pending approval rather than posted (the draft's `WddStatus`): show that, never "posted".
+6. **Unknown outcome on Confirm:** re-read the draft and look for a document with its `draftKey`
+   before offering the button again — a second click can post twice.
+
+**Payments.** The receipt shows SAP's amount due per invoice from
+`sap_b1_sl_write method="POST" path="PaymentCalculationService_GetPaymentAmount"` (body
+`{PaymentBPCode: {BPCode, Date}, PaymentInvoiceEntries: [{DocEntry, DocType, InstallmentId}]}`,
+answering `TotalPaymentAmount` with its foreign/system-currency and cash-discount amounts) — it
+has no side effects. The bank, cash, or card account is resolved live while building. Then one
+POST to `IncomingPayments` or `VendorPayments`.
+
+**Journal entries** have no preview: the page shows every line with its account and amount, and
+refuses to post unless debits equal credits.
+
+**The wrapper allowlist** names each of these paths — and deletes only `Drafts(<n>)` whose
+`Comments` carry the page's marker, re-read just before deleting.
+
+**Not yet confirmed on this server:** `DraftsService_SaveDraftToDocument` and
+`PaymentCalculationService_GetPaymentAmount` are documented Service Layer actions, but
+`sap_b1_discover` can't list actions. Call `GetPaymentAmount` once in chat before building on
+it; `SaveDraftToDocument` posts for real, so confirm it on a document the user actually wants
+posted (through the normal confirm-first flow) or on a test-company connector. A viewer whose SAP
+role can create drafts but not use `sap_b1_sl_write` can preview but never post or discard: show
+that the draft is left in SAP for someone who can.
 
 ## Handover
 
