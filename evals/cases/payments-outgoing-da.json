@@ -1,0 +1,20 @@
+{
+  "name": "payments-outgoing-da",
+  "query": "Vi har betalt {payment_vendor} faktura {payment_vendor_docnum} via bankoverførsel i dag. Registrer betalingen.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-payments"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Treats it as an outgoing payment to a vendor (VendorPayments), not an incoming payment from a customer",
+    "Looks the AP invoice up (PurchaseInvoices via the Service Layer, or OPCH via SQL) by the DocNum the user gave before proposing the payment",
+    "The receipt applies the payment to that invoice for its open amount (total minus anything already paid)",
+    "Resolves the bank G/L account for TransferAccount live, or asks the user which bank account when it is unclear",
+    "Shows a confirmation receipt and stops to ask the user to confirm before posting",
+    "Replies in Danish"
+  ]
+}

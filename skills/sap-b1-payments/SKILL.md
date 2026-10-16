@@ -1,6 +1,6 @@
 ---
 name: sap-b1-payments
-description: "Applies payments in SAP Business One via the Service Layer MCP — incoming payments from customers (IncomingPayments) and outgoing payments to vendors (VendorPayments), matched against open invoices and settled to a bank, cash, or card account. Use whenever the user wants to register a payment, mark an invoice as paid, record that a customer paid, pay a vendor bill, or reconcile a payment against open invoices. Also triggers on Danish requests: registrer betaling, indbetaling, kunde har betalt, betal leverandør, udbetaling, bankoverførsel, match betaling mod faktura, afstem betaling, marker faktura som betalt. Resolves the business partner, the open invoices, and the bank/cash/card G/L account live for the connected company database."
+description: "Applies payments in SAP Business One via the Service Layer MCP — incoming payments from customers (IncomingPayments) and outgoing payments to vendors (VendorPayments), matched against open invoices and settled to a bank, cash, or card account — full, partial, or on account. Use whenever the user wants to register a payment, mark an invoice as paid, record that a customer paid, record a partial payment or a payment on account, pay a vendor bill, or reconcile a payment against open invoices. Also triggers on Danish requests: betaling, registrer betaling, indbetaling, kunde har betalt, betal leverandør, udbetaling, bankoverførsel, delbetaling, betaling på konto, a conto, match betaling mod faktura, afstem betaling, marker faktura som betalt. Resolves the business partner, the open invoices, and the bank/cash/card G/L account live for the connected company database."
 ---
 
 # SAP B1 — payments
@@ -57,28 +57,59 @@ invoices, and the settlement account **live** for the connected DB.
 1. **Who is paying whom?** Customer pays us → `IncomingPayments` (`oIncomingPayments`). We pay a
    vendor → `VendorPayments` (`oVendorPayments`).
 2. **How is it settled?** Choose one payment means and set the matching header fields:
-   - **Bank transfer** → `TransferAccount` (a G/L/bank account), `TransferSum`, `TransferDate`.
+   - **Bank transfer** → `TransferAccount` (a G/L/bank account), `TransferSum`, `TransferDate`,
+     and `TransferReference` when the user gives a bank reference.
    - **Cash** → `CashAccount`, `CashSum`.
-   - **Check / card** → the `PaymentChecks` / `PaymentCreditCards` collection.
-   Resolve the bank/cash G/L account live from `ChartOfAccounts`.
+   - **Card** → one `PaymentCreditCards` line: `CreditCard` (a `CreditCardCode` from
+     `CreditCards`), `CreditAcct` (that card's `GLAccount`), `PaymentMethodCode` (from
+     `CreditPaymentMethods` where `AssignedtoCreditCard` is that card), `CreditSum`,
+     `CardValidUntil` (ask the user for the expiry month), `VoucherNum` (the terminal or voucher
+     reference), and `CreditCardNumber` — the **last four digits only**. Never ask for or send a
+     full card number or security code; if the user pastes one, keep only its last four digits and
+     don't repeat the rest. If `CreditCards` is empty, card payments aren't set up in this DB — say
+     so and stop. If an earlier payment in this DB has `PaymentCreditCards`, copy its shape.
+   - **Check** → the `PaymentChecks` collection: read an existing check payment's lines for the
+     shape, or `describe` `PaymentCheck`; never guess bank or account codes.
+
+   Resolve the bank/cash G/L account live from `ChartOfAccounts`. When several bank accounts fit,
+   propose the `TransferAccount` this partner's recent payments used, and ask if unsure.
+3. **How much goes where?** An invoice's open amount is `DocTotal − PaidToDate`
+   (`DocTotalFc − PaidToDateFC` in its own currency). The settlement sum is what the user says was
+   paid; the default is the full open amount of the invoice(s) they named.
+   - **Full payment** → `SumApplied` = the open amount.
+   - **Partial payment** → the applied amounts add up to the amount paid, each at most its
+     invoice's open amount; the receipt shows what stays open on each invoice afterwards. With one
+     invoice, its `SumApplied` is the amount paid. With several, propose settling the oldest due
+     date first and say so on the receipt.
+   - **Overpayment** → SAP posts the settlement sum minus the applied total on account (it shows as
+     `NoDocSum` on the payment). Never let that happen silently: the receipt shows the remainder as
+     "on account" and the user either confirms it or names more open invoices to apply it to.
+   - **Payment on account** (the user says so, or names no invoice and doesn't want one matched)
+     → omit `PaymentInvoices`; the whole sum posts unallocated on the partner's account.
 
 ## Steps
 
 1. **Resolve the partner** (`BusinessPartners` → `CardCode`). If ambiguous, list matches and ask.
 2. **Find the open invoices to settle.** Query `Invoices` (or `PurchaseInvoices`) for the partner
-   with `DocumentStatus eq 'bost_Open'`; get each invoice's `DocEntry` (the key — not `DocNum`)
-   and the outstanding amount. If the user named a `DocNum`, resolve it to `DocEntry` first.
+   with `DocumentStatus eq 'bost_Open'`; select `DocEntry` (the key — not `DocNum`), `DocNum`,
+   `DocDueDate`, `DocCurrency`, `DocTotal`, `PaidToDate`, and — for a foreign-currency invoice —
+   `DocTotalFc`, `PaidToDateFC`. If the user named a `DocNum`, resolve it to `DocEntry` first.
 3. **Match payment to invoices.** Each settled invoice goes in the `PaymentInvoices` collection:
-   `DocEntry` (the invoice), `InvoiceType`, and `SumApplied`. `InvoiceType` is an enum **name**,
+   `DocEntry` (the invoice), `InvoiceType`, and `SumApplied` (local currency — in a
+   foreign-currency payment set `AppliedFC` instead; see below). `InvoiceType` is an enum **name**,
    not the object-type number: `"it_Invoice"` for an AR invoice, `"it_PurchaseInvoice"` for an AP
    invoice. For any other kind (credit memo, journal entry), read the `PaymentInvoices` of an
    existing payment that settled one to get the exact name rather than guessing.
 4. **Confirm the settlement account** with `describe` only if unsure of the field name for this
    DB and you haven't already described the entity this session.
 5. **Show a receipt and confirm**, then post with `sap_b1_sl_write`
-   (`POST IncomingPayments` / `POST VendorPayments`). Payments post immediately — there is no
-   separate "approve" step — so confirm the amounts and account before sending. If a bank advice
-   or receipt is in the conversation, settle attachment intent in this same turn.
+   (`POST IncomingPayments` / `POST VendorPayments`). The receipt lists each invoice with its open
+   amount, the amount applied, and what stays open; the settlement account; and any remainder
+   on account. Payments post immediately — there is no separate "approve" step — so confirm the
+   amounts and account before sending. If a bank advice or receipt is in the conversation, settle
+   attachment intent in this same turn.
+6. **Report what is still open.** After posting, re-read the settled invoices' `PaidToDate` and
+   `DocumentStatus` and tell the user which are now closed and what is still owed.
 
 ## Payload shape (incoming payment, bank transfer)
 
@@ -99,6 +130,28 @@ sap_b1_sl_write
 ```
 
 For an outgoing/vendor payment, use `path: "VendorPayments"` and `"InvoiceType": "it_PurchaseInvoice"`.
+
+## Foreign-currency payments
+
+When the partner pays in a currency other than the local one (or the invoice is in one):
+
+- Set `DocCurrency` to the payment currency and leave `DocRate` to SAP — it uses its rate for
+  `DocDate` (`ORTT`). If no rate exists for that date, stop and tell the user to enter it in SAP;
+  don't invent one.
+- Per invoice, set `AppliedFC` to the amount applied in the invoice's currency (the open amount
+  is `DocTotalFc − PaidToDateFC`) and leave `SumApplied` to SAP — it converts at the invoice's
+  rate and books any exchange-rate difference itself.
+- Give the settlement sum (`TransferSum` / `CashSum`) in the payment currency, and compare it with
+  the applied total in that currency too — an overpayment remainder goes on account as above.
+  Don't learn amounts from earlier FX payments: read back, the Service Layer shows `TransferSum`
+  and `SumApplied` in **local** currency. In SQL, `ORCT`/`OVPM.TrsfrSumFC` holds the foreign amount
+  and `TrsfrSum` the local one.
+- The receipt shows the foreign amounts, the rate, and the local equivalent (see core rules).
+  Always check an FX payment after posting: read back `TrsfrSumFC` or `CashSumFC` via
+  `sap_b1_sql_query` (or each line's `AppliedFC`) and compare with the receipt. If it doesn't
+  match, tell the user at once — the payment can be cancelled with
+  `sap_b1_sl_write method="POST" path="IncomingPayments(<DocEntry>)/Cancel"` (or
+  `VendorPayments(...)/Cancel`), but only if they confirm.
 
 <!-- attach-files: identical in every SAP B1 skill that attaches files; scripts/check.sh enforces it -->
 ## Attaching a file
@@ -133,10 +186,9 @@ file). Report the record and the attachment together ("invoice posted, `bilag.pd
 
 ## Notes
 
-- **`SumApplied` per line must total the settlement sum.** A payment can settle several invoices
-  (partial payments are fine); make the applied amounts add up to `TransferSum`/`CashSum`.
-- A payment with no `PaymentInvoices` posts as an unallocated payment on account — only do that if
-  the user asks for it; otherwise always match to specific invoices.
+- **Applied amounts never exceed the settlement sum**, and no line exceeds that invoice's open
+  amount (compare in the same currency). Any difference between the settlement sum and the applied
+  total is the on-account remainder (see "How much goes where?").
 - Dates are `YYYY-MM-DD`. Resolve every G/L account live; never reuse a bank account number from
   another company.
 - If write tools aren't exposed, you can still read payments and open invoices with
