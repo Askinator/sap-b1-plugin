@@ -63,8 +63,12 @@ referenced item/account **live** for the connected DB.
    the `ContactCode` from the partner's contacts if the user names a contact person.
 2. **Confirm fields for this DB** (skip if already described this session).
    `sap_b1_discover action="describe" name="ServiceCalls"` — field names for subject, status,
-   origin, and problem type vary by configuration, so confirm before writing. Status/priority/type
-   codes are configurable per DB; resolve valid values live rather than assuming numbers.
+   origin, and problem type vary by configuration, so confirm before writing. `Priority` is a
+   fixed enum (`scp_Low`, `scp_Medium`, `scp_High`; SQL `OSCL.priority` `L`/`M`/`H`). `Status` is
+   a number: the system statuses `-3` open, `-2` pending, and `-1` closed exist in every company
+   (their names are translated), and a company can add its own in `ServiceCallStatus` (SQL
+   `OSCS`) — resolve any other status there. Call types, problem types, and origins are
+   configurable per DB; resolve them live rather than assuming numbers.
 3. **Ask only if something is ambiguous** — several matching customers, or a status/type you'd
    have to guess. A service call isn't a financial posting, so an unambiguous request can go
    straight to creating it. Tickets often start from a customer email, screenshot, or PDF — if one
@@ -73,7 +77,7 @@ referenced item/account **live** for the connected DB.
    file if the user said to (see *Attaching a file*).
 5. **Update** an existing call with `sap_b1_sl_write method="PATCH" path="ServiceCalls(<id>)"`.
 6. **Read** calls with `sap_b1_sl_query entity="ServiceCalls"` (filter by `CustomerCode`, status,
-   or date).
+   or date). Open calls are `Status ne -1`, which also catches pending and company-added statuses.
 
 ## Payload shape (create)
 
@@ -90,7 +94,8 @@ sap_b1_sl_write
 ```
 
 Confirm the exact field names against `describe` first — `CustomerCode`/`Subject` are common but
-verify for this DB, and only set status/priority/type with codes you resolved live.
+verify for this DB, and only set a company-added status or a call/problem type with codes you
+resolved live.
 
 ## Log work against a call (activities)
 
@@ -165,3 +170,5 @@ file). Report the record and the attachment together ("invoice posted, `bilag.pd
 - Show the created call's key (`ServiceCallID`) back to the user.
 - If write tools are not exposed, you can still read calls with `sap_b1_sl_query`; explain that
   creating/updating needs a write-capable capability set.
+- For a page to manage or close service calls from a list, or a board of open calls, use
+  `sap-b1-live-artifacts` (a custom page or a dashboard).

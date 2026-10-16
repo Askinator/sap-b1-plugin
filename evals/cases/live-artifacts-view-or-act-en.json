@@ -1,0 +1,11 @@
+{
+  "name": "live-artifacts-view-or-act-en",
+  "query": "Can you make me a board of my open service calls?",
+  "needs_sap": true,
+  "expect_skills": ["sap-b1-live-artifacts"],
+  "expected_behavior": [
+    "Before building anything, asks one question: whether the board is just to look at, or should also do something with the service calls (e.g. close or update them)",
+    "Does not build a dashboard or a page before that question is answered",
+    "Does not attempt to create, change, or post anything in SAP"
+  ]
+}
