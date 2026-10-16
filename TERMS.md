@@ -18,8 +18,7 @@ It guides Claude when reading and writing data in your SAP Business One company 
 including financial documents such as invoices, payments, and journal entries.
 
 - You are responsible for reviewing what Claude proposes before confirming any write. The skills
-  create drafts and ask for confirmation before posting financial documents, but the final decision
-  is yours.
+  ask for confirmation before posting financial documents, but the final decision is yours.
 - You are responsible for the permissions of the SAP B1 MCP server and user account you connect,
   and for your organization's accounting, tax, and compliance obligations.
 

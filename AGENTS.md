@@ -20,8 +20,8 @@ connector dialog. Don't reintroduce one.
 
 The SAP B1 **MCP server itself is a separate, hosted project and is NOT in this repo.** Do not look
 for server code, request handlers, or `sap_b1_*` tool implementations here — they don't exist in
-this tree. This repo only ships the *connection config* + the *skills*. Changes here are almost
-always edits to skill markdown or the manifest/marketplace JSON.
+this tree. This repo only ships the *skills* and the plugin manifest/marketplace JSON. Changes here are almost
+always edits to skill markdown or that JSON.
 
 ## The one architectural invariant: discovery-first
 
@@ -37,10 +37,12 @@ not baked in. `skills/sap-b1-overview/reference.md` is the deliberate exception 
 recipes). Company-specific numbers must never enter it. Task skills inline the invariant facts
 they need (object types, copy-from-base fields) rather than pointing into it — see below.
 
-The efficiency corollary: discovery-first means *never guess*, not *re-discover every task*. Skills phrase `describe`/resolve steps as **conditional and session-aware** ("only if
-unsure, skip if already described this session"), batch independent lookups into one round trip,
-and let SAP's own defaulting work (e.g. omit `VatGroup` and let tax determination derive it). When adding a skill, don't reintroduce unconditional per-task
-describe steps or mark SAP-derivable fields as always-required.
+The efficiency corollary: discovery-first means *never guess*, not *re-discover every task*.
+Skills phrase `describe`/resolve steps as **conditional and session-aware** ("only if unsure, skip
+if already described this session"), batch independent lookups into one round trip, and let SAP's
+own defaulting work (e.g. omit `VatGroup` and let tax determination derive it). When adding a
+skill, don't reintroduce unconditional per-task describe steps or mark SAP-derivable fields as
+always-required.
 
 ## This repo is public — keep tenant data out of it
 
@@ -99,9 +101,8 @@ the trigger surface, so keep it dense with the phrasings a real user would type.
 **When you add or rename a skill, update all four hub docs that list the skill set:** the overview
 skill index (`skills/sap-b1-overview/SKILL.md`), the getting-started tour table
 (`skills/sap-b1-getting-started/SKILL.md`), the `README.md` skills list, and the task-skill list
-above in this file. These drifted twice (PRs #8/#9 added skills without touching them). `scripts/check.sh`
-now enforces this — it fails if a `skills/*/` dir is missing from any hub, and CI runs it on every PR.
-Run it locally before opening a PR: `scripts/check.sh`.
+above in this file. `scripts/check.sh` enforces this — it fails if a `skills/*/` dir is missing from any hub, and CI
+runs it on every PR. Run it locally before opening a PR: `scripts/check.sh`.
 
 ## The MCP tools skills orchestrate
 

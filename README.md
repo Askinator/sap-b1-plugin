@@ -47,6 +47,13 @@ connection and walks you through the rest.
 - **English and Danish.** Skills trigger on Danish requests too (*faktura*, *kassekladde*,
   *kreditnota*, …); Claude answers in the language you write in.
 
+## Example requests
+
+- *"What does customer C50000 owe, and which invoices are overdue?"*
+- *"Create an invoice for 10 hours of consulting to C50000."*
+- *"Registrer betaling fra kunden på faktura 1042."*
+- *"Build me a dashboard of open service calls per customer."*
+
 ## Skills
 
 Claude picks these up automatically for relevant requests:
@@ -77,7 +84,8 @@ warranty; you remain responsible for what gets posted.
 Copyright © 2026 Aske Paustian. All rights reserved. You may install and use the plugin; copying,
 modifying, or redistributing it requires permission — see [LICENSE](LICENSE). The plugin collects
 no data; see [PRIVACY.md](PRIVACY.md) and [TERMS.md](TERMS.md). Questions and bug reports:
-[GitHub Issues](https://github.com/Askinator/sap-b1-plugin/issues).
+[GitHub Issues](https://github.com/Askinator/sap-b1-plugin/issues). Contributors and AI agents
+working in this repo: see [AGENTS.md](AGENTS.md) — notably, never commit real tenant data.
 
 This is an independent project, not affiliated with or endorsed by SAP SE. SAP and
 SAP Business One are trademarks or registered trademarks of SAP SE.
