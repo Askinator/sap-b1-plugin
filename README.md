@@ -1,12 +1,8 @@
-<p align="center">
-  <img src=".claude-plugin/icon.svg" width="96" alt="SAP Business One plugin icon">
-</p>
-
 <h1 align="center">SAP Business One plugin for Claude</h1>
 
 <p align="center">
   <em>Talk to your ERP. Look up balances, post invoices and payments, and build live dashboards —<br>
-  in plain English or Danish, with a confirmation step before anything is posted.</em>
+  in plain language.</em>
 </p>
 
 ---
