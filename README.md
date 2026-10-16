@@ -69,8 +69,7 @@ repository**, so the plugin does nothing on its own — see [Requirements](#requ
 
 ## Requirements
 
-- **Claude Desktop** (the skills also use Cowork for scheduled tasks, and claude.ai artifacts for
-  dashboards and custom pages).
+- **Claude Desktop** (the skills also use Cowork for scheduled tasks, and claude.ai artifacts for dashboards and custom pages).
 - **SAP Business One** with the **Service Layer** enabled.
 - An **MCP server** reachable over HTTPS that exposes the `sap_b1_*` tools these skills call:
   `sap_b1_discover`, `sap_b1_get_document`, `sap_b1_sl_query`, `sap_b1_sl_write`,

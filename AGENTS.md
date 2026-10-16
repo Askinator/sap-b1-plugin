@@ -82,7 +82,7 @@ all specifics are resolved live and the URL is never baked in.
 - **Task skills** — `sap-b1-lookups` (read-only balances/aging/status), `sap-b1-invoices`,
   `sap-b1-credit-memos`, `sap-b1-payments`, `sap-b1-sales-process`, `sap-b1-purchasing`,
   `sap-b1-journal-entries`, `sap-b1-service-calls`, `sap-b1-master-data`, `sap-b1-messages`
-  (internal SAP B1 messages/alerts), `sap-b1-live-artifacts` (refreshable Cowork dashboards).
+  (internal SAP B1 messages/alerts), `sap-b1-live-artifacts` (live claude.ai dashboards and custom pages).
   Each is **self-contained**: it never relies on another skill being loaded or points into another
   skill's files. Evals showed the overview loaded in only a few runs and the cross-skill
   `reference.md` was never read, so "read the overview first" didn't hold.
