@@ -1,0 +1,18 @@
+{
+  "name": "attachments-list-en",
+  "query": "Which files are attached to invoice {credit_docnum}?",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-attachments"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query"
+  ],
+  "expected_behavior": [
+    "Resolves the invoice by DocNum with a live query and reads its AttachmentEntry",
+    "If AttachmentEntry is set, queries Attachments2 for that entry and lists file names with extensions; if it is empty, says the invoice has no attachments",
+    "Does not try to upload, attach, or write anything",
+    "Does not show server folder paths as something the user can open"
+  ]
+}

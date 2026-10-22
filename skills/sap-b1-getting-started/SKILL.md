@@ -103,6 +103,7 @@ needs the write tools enabled server-side.
 | Post a manual journal entry to the G/L | `sap-b1-journal-entries` |
 | Open or manage a support/service ticket | `sap-b1-service-calls` |
 | Create a new customer, vendor, or item | `sap-b1-master-data` |
+| Attach a file to an existing record, or see what's attached | `sap-b1-attachments` |
 | Send an internal SAP message to a user or department | `sap-b1-messages` |
 | Build a live dashboard, or a custom page (work queue, form, approvals), over live SAP data | `sap-b1-live-artifacts` |
 
