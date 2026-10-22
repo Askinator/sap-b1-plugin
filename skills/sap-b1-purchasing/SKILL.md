@@ -1,6 +1,6 @@
 ---
 name: sap-b1-purchasing
-description: "Drives the SAP Business One purchasing lifecycle via the Service Layer MCP — purchase orders (PurchaseOrders), goods receipt POs (PurchaseDeliveryNotes), and their conversion forward into an AP invoice by copying from the base document. Use whenever the user wants to raise a purchase order, order from a vendor, receive goods against a PO, book a goods receipt, or turn a PO/receipt into a vendor bill. Also triggers on Danish requests: indkøbsordre, købsordre, bestil hos leverandør, opret indkøbsordre, varemodtagelse, godsmodtagelse, modtag varer, indkøbsproces. Resolves the vendor, items, and VAT group live for the connected company database."
+description: "Drives the SAP Business One purchasing lifecycle via the Service Layer MCP — purchase orders (PurchaseOrders), goods receipt POs (PurchaseDeliveryNotes), and their conversion forward into an AP invoice by copying from the base document. Use whenever the user wants to raise a purchase order, order from a vendor, receive goods against a PO, book a goods receipt, or turn a PO/receipt into a vendor bill. Also triggers on Danish requests: indkøbsordre, købsordre, bestil hos leverandør, bestilling til leverandør, opret indkøbsordre, varemodtagelse, godsmodtagelse, modtag varer, indkøbsproces. Resolves the vendor, items, and VAT group live for the connected company database."
 ---
 
 # SAP B1 — purchasing (PO → goods receipt → AP invoice)
