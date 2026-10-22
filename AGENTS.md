@@ -164,9 +164,5 @@ never affects a running session; reinstall to test a change end to end.
 
 ## Planned work
 
-Open work (tracked as GitHub issues on
-[Askinator/sap-b1-plugin](https://github.com/Askinator/sap-b1-plugin/issues)): deeper reconciliation
-(bank statement matching), returns/RMA flows, and a dedicated attachments skill once the
-`prepare_upload`/`attach_file` flow has been exercised against a live tenant. When adding one, keep
-tenant-specific values resolved live; put a new tenant-invariant fact in the skill that needs it
-(and in `reference.md` for the overview), or in a shared block if every skill needs it.
+Tracked in [GitHub issues](https://github.com/Askinator/sap-b1-plugin/issues) — check there, not
+here, for what's planned.
