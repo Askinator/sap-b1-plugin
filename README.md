@@ -111,6 +111,7 @@ connection and walks you through the rest.
 | `sap-b1-journal-entries` | Manual G/L postings, debits = credits |
 | `sap-b1-service-calls` | Support tickets and activity logging |
 | `sap-b1-master-data` | Create / maintain business partners and items |
+| `sap-b1-attachments` | Attach files to existing records and list what a record has attached |
 | `sap-b1-messages` | Send internal SAP B1 messages / alerts to users, named recipients, or a department |
 | `sap-b1-live-artifacts` | Live claude.ai dashboards, or custom pages for anything else (work queues, forms, approvals), on live SAP B1 data |
 

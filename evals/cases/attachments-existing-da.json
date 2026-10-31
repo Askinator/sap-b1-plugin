@@ -1,0 +1,29 @@
+{
+  "name": "attachments-existing-da",
+  "query": "Vedhæft kvittering.pdf til faktura {credit_docnum}.",
+  "needs_sap": true,
+  "expect_skills": [
+    "sap-b1-attachments"
+  ],
+  "fixtures": [
+    "kvittering.pdf"
+  ],
+  "must_call_any": [
+    "sap_b1_sl_query",
+    "sap_b1_sql_query",
+    "sap_b1_get_document"
+  ],
+  "must_not_call": [
+    "sap_b1_sl_write",
+    "sap_b1_create_draft",
+    "sap_b1_attach_file",
+    "send_email_notification"
+  ],
+  "expected_behavior": [
+    "Treats this as attaching a file to an existing AR invoice, not as booking the receipt or creating a new document",
+    "Looks up the invoice by its DocNum with a live query and uses its DocEntry (not the DocNum) as the attachment target key on Invoices",
+    "Starts the upload flow (sap_b1_prepare_upload for that invoice) without first asking for a financial confirmation; a blocked call is reported as not attached",
+    "Does not claim the file was attached when the upload did not succeed",
+    "Replies in Danish"
+  ]
+}

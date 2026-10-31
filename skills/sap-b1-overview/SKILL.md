@@ -84,6 +84,7 @@ Hand off to the matching skill when the request is one of these:
 - `sap-b1-journal-entries` — manual G/L postings, debits = credits.
 - `sap-b1-service-calls` — support tickets and activity logging.
 - `sap-b1-master-data` — create/maintain business partners and items.
+- `sap-b1-attachments` — attach files to records that already exist, and list a record's attachments.
 - `sap-b1-messages` — send internal SAP B1 messages/alerts to users, named recipients, or a department.
 - `sap-b1-live-artifacts` — build a live claude.ai dashboard, or a custom page for anything else (work queues, forms, approvals), backed by live SAP B1 data.
 
